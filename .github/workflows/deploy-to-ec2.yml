@@ -49,6 +49,7 @@ jobs:
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
           cd ${{ secrets.EC2_APP_PATH }}/GPASS
+          git pull
           docker-compose pull
           docker-compose down
           docker-compose up -d
