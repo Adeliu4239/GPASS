@@ -1,0 +1,16 @@
+# 忽略.env文件
+.env
+
+# 忽略logs目录
+logs/
+
+**/.git
+**/.DS_Store
+**/node_modules
+*.log
+Dockerfile*
+docker-compose*
+.dockerignore
+.git
+.gitignore
+.vscode
