@@ -1,5 +1,5 @@
 # Frontend Dockerfile
-FROM node:18.16.0-alpine
+FROM node:20-alpine
 
 # 设置容器内的工作目录
 WORKDIR /app/frontend
