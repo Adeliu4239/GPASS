@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .product {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .add-to-cart {
+            background-color: #4caf50;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            cursor: pointer;
+        }
+
+        .add-to-cart:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Product Page</h1>
+
+    <div class="product" id="product1">
+        <h2>Product 1</h2>
+        <p>Description: Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+        <p>Price: $19.99</p>
+        <button class="add-to-cart" onclick="addToCart('Product 1', 19.99)">Add to Cart</button>
+    </div>
+
+    <div class="product" id="product2">
+        <h2>Product 2</h2>
+        <p>Description: Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Price: $29.99</p>
+        <button class="add-to-cart" onclick="addToCart('Product 2', 29.99)">Add to Cart</button>
+    </div>
+
+    <!-- Add more product items as needed -->
+
+    <script>
+        function addToCart(productName, price) {
+            // Add your logic here to handle adding the product to the cart
+            console.log(`Added ${productName} to cart. Price: $${price}`);
+        }
+    </script>
+</body>
+</html>

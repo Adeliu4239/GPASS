@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Login</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+      crossorigin="anonymous"
+    />
+    <style>
+      body {
+        margin: 20px 0;
+      }
+      .jumbotron {
+        text-align: center;
+      }
+      .text-left {
+        text-align: left;
+      }
+      .container {
+        max-width: 750px;
+      }
+      form {
+        padding: 40px;
+        box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1),
+          0 3px 6px rgba(0, 0, 0, 0.08);
+      }
+      .tappay-field-focus {
+        border-color: #66afe9;
+        outline: 0;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 8px rgba(102, 175, 233, 0.6);
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 8px rgba(102, 175, 233, 0.6);
+      }
+      .has-error .tappay-field-focus {
+        border-color: #843534;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 6px #ce8483;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #ce8483;
+      }
+      .has-success .tappay-field-focus {
+        border-color: #2b542c;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
+          0 0 6px #67b168;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #67b168;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="login-section">
+        <h2>Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="useremail">Useremail</label>
+            <input
+              type="text"
+              class="form-control"
+              id="useremail"
+              placeholder="Enter useremail"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              placeholder="Password"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+    <div class="user-section" style="display: none">
+      <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
+      <button class="btn btn-primary" onclick="logout()">Logout</button>
+    </div>
+    <script
+      src="https://code.jquery.com/jquery-3.2.1.min.js"
+      integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      var token = localStorage.getItem("token");
+
+      if (!token) {
+        // 如果token不存在，則顯示登入區塊
+        document.querySelector(".login-section").style.display = "block";
+      } else {
+        // 如果token存在，則隱藏登入區塊
+        document.querySelector(".login-section").style.display = "none";
+
+        // 從 localStorage 取得使用者資料並顯示
+        var user = localStorage.getItem("user_name");
+        if (user) {
+          document.querySelector("#usernameDisplay").innerHTML = user;
+          document.querySelector(".user-section").style.display = "block";
+        }
+      }
+
+      $("#loginForm").on("submit", async function (event) {
+        event.preventDefault();
+        console.log("login");
+        const useremail = document.querySelector("#useremail").value;
+        const password = document.querySelector("#password").value;
+        const data = {
+          provider: "native",
+          email: useremail,
+          password: password,
+        };
+        try {
+          const response = await fetch(
+            `http://35.74.134.49/api/1.0/user/signin`,
+            // `http://localhost:5000/api/1.0/user/signin`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            }
+          );
+          const result = await response.json();
+          if (result.error) {
+            alert(result.error);
+            return;
+          }
+          console.log(result);
+          localStorage.setItem("token", result.data.access_token);
+          localStorage.setItem("user_name", result.data.user.name);
+          location.reload();
+        } catch (error) {
+          console.error("An error occurred:", error);
+        }
+      });
+
+      async function logout() {
+        try {
+          // 清除本地存儲的 token 和 user_name
+          localStorage.removeItem("token");
+          localStorage.removeItem("user_name");
+
+          // 告訴後端進行登出
+          const response = await fetch(
+            `http://35.74.134.49/api/1.0/user/logout`,
+            // `http://localhost:5000/api/1.0/user/logout`,
+            {
+              method: "GET",
+            }
+          );
+          if (response.ok) {
+            // 重新加載頁面或執行其他操作
+            location.reload();
+          } else {
+            // 可以處理失敗的情況，例如提示用戶登出失敗
+            console.error("Logout failed:", response.statusText);
+          }
+        } catch (error) {
+          console.error("An error occurred during logout:", error);
+        }
+      }
+
+      function isIos() {
+        return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,826 @@
+openapi: 3.0.0
+info:
+  title: STYLiSH API
+  version: 1.0.0
+  description: |-
+    This is the API documentation for the STYLiSH project.
+  contact:
+    email: hahaisme@haha.WhySoSerious
+
+tags:
+  - name: products
+    description: Everything about products
+
+paths:
+  /api/1.0/products:
+    post:
+      tags:
+        - products
+      summary: Add a new product to the store
+      description: Use this request to add a new product to the store
+      operationId: addProduct
+      requestBody:
+        description: Product object that needs to be added to the store
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                  description: The category of the product
+                title:
+                  type: string
+                  description: The title of the product
+                description:
+                  type: string
+                  description: The description of the product
+                price:
+                  type: number
+                  description: The price of the product
+                texture:
+                  type: string
+                  description: The texture of the product
+                wash:
+                  type: string
+                  description: The wash of the product
+                place:
+                  type: string
+                  description: The place of the product
+                note:
+                  type: string
+                  description: The note of the product
+                story:
+                  type: string
+                  description: The story of the product
+                colors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: The color code of the product
+                      name:
+                        type: string
+                        description: The color name of the product
+                  description: The colors of the product
+                sizes:
+                  type: array
+                  items:
+                    type: string
+                  description: The sizes of the product
+                variants:
+                  type: array
+                  description: The variants of the product
+                  items:
+                    type: object
+                    properties:
+                      color_code:
+                        type: string
+                        description: The color code of the product
+                      size:
+                        type: string
+                        description: The size of the product
+                      stock:
+                        type: integer
+                        description: The stock of the product
+                main_image:
+                  type: string
+                  format: binary
+                  description: The main image of the product
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The images of the product
+              required:
+                - category
+                - title
+                - price
+                - colors
+                - sizes
+                - variants
+                - main_image
+
+      responses:
+        "200":
+          description: Product added successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "415":
+          description: No file uploaded
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Please upload a file
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/products/{category}:
+    get:
+      tags:
+        - products
+      summary: Get products by category
+      description: Use this request to get products by category
+      operationId: getProductsByCategory
+      parameters:
+        - name: category
+          in: path
+          description: The category of the product
+          required: true
+          schema:
+            type: string
+          example: accessories
+        - name: paging
+          in: query
+          description: The paging of the search result
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: null
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Category not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Category not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/products/details/:
+    get:
+      tags:
+        - products
+      summary: Get product details by id
+      description: Use this request to get product details by id
+      operationId: getProductDetailsById
+      parameters:
+        - name: id
+          in: query
+          description: The id of the product
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Product details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Product not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/products/search:
+    get:
+      tags:
+        - products
+      summary: Search products
+      description: Use this request to search products
+      operationId: searchProducts
+      parameters:
+        - name: keyword
+          in: query
+          description: The keyword to search
+          required: true
+          schema:
+            type: string
+        - name: paging
+          in: query
+          description: The paging of the search result
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: null
+      responses:
+        "200":
+          description: Products retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Product not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/products/update/{id}:
+    put:
+      tags:
+        - products
+      summary: Update a product
+      description: Use this request to update a product
+      operationId: updateProduct
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        description: Product object that needs to be updated
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                category:
+                  type: string
+                  description: The category of the product
+                title:
+                  type: string
+                  description: The title of the product
+                description:
+                  type: string
+                  description: The description of the product
+                price:
+                  type: number
+                  description: The price of the product
+                texture:
+                  type: string
+                  description: The texture of the product
+                wash:
+                  type: string
+                  description: The wash of the product
+                place:
+                  type: string
+                  description: The place of the product
+                note:
+                  type: string
+                  description: The note of the product
+                story:
+                  type: string
+                  description: The story of the product
+                colors:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      code:
+                        type: string
+                        description: The color code of the product
+                      name:
+                        type: string
+                        description: The color name of the product
+                  description: The colors of the product
+                sizes:
+                  type: array
+                  items:
+                    type: string
+                  description: The sizes of the product
+                variants:
+                  type: array
+                  description: The variants of the product
+                  items:
+                    type: object
+                    properties:
+                      color_code:
+                        type: string
+                        description: The color code of the product
+                      size:
+                        type: string
+                        description: The size of the product
+                      stock:
+                        type: integer
+                        description: The stock of the product
+                main_image:
+                  type: string
+                  format: binary
+                  description: The main image of the product
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The images of the product
+      responses:
+        "200":
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "415":
+          description: No file uploaded
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Please upload a file
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/products/delete/{id}:
+    delete:
+      tags:
+        - products
+      summary: Delete a product
+      description: Use this request to delete a product
+      operationId: deleteProduct
+      parameters:
+        - name: id
+          in: path
+          description: The id of the product
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Product deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Product"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Product not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/user/signup:
+    post:
+      tags:
+        - user
+      summary: Sign up
+      description: Use this request to sign up
+      operationId: signUp
+      requestBody:
+        description: User object that needs to be signed up
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the user
+                email:
+                  type: string
+                  description: The email of the user
+                password:
+                  type: string
+                  description: The password of the user
+              required:
+                - name
+                - email
+                - password
+      responses:
+        "200":
+          description: User signed up successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "409":
+          description: Email already exists
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Email already exists
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/user/signin:
+    post:
+      tags:
+        - user
+      summary: Sign in
+      description: Use this request to sign in
+      operationId: signIn
+      requestBody:
+        description: User object that needs to be signed in
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  description: The provider of the user
+                email:
+                  type: string
+                  description: The email of the user
+                password:
+                  type: string
+                  description: The password of the user
+                access_token:
+                  type: string
+                  description: The access token of the user
+              required:
+                - provider
+      responses:
+        "200":
+          description: User signed in successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "403":
+          description: Sign in failed
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Email or password incorrect
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+  /api/1.0/user/profile:
+    get:
+      tags:
+        - user
+      summary: Get user profile
+      description: Use this request to get user profile
+      operationId: getprofile
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: Authorization
+          in: header
+          description: The authorization token
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Token missing
+        "403":
+          description: Wrong token
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Invalid token
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+          description: The product ID
+        category:
+          type: string
+          example: men
+          description: The category of the product
+        title:
+          type: string
+          example: Stylish Denim Shirt
+          description: The title of the product
+        description:
+          type: string
+          example: This denim shirt is made from pure cotton denim
+          description: The description of the product
+        price:
+          type: number
+          format: float
+          example: 1999
+          description: The price of the product
+        texture:
+          type: string
+          example: Cotton
+          description: The texture of the product
+        wash:
+          type: string
+          example: Light Wash
+          description: The wash of the product
+        place:
+          type: string
+          example: China
+          description: The place of the product
+        note:
+          type: string
+          example: This is a note
+          description: The note of the product
+        story:
+          type: string
+          example: This is a story
+          description: The story of the product
+        colors:
+          type: array
+          items:
+            type: object
+            properties:
+              code:
+                type: string
+                example: FFFFFF
+                description: The color code of the product
+              name:
+                type: string
+                example: White
+                description: The color name of the product
+          description: The colors of the product
+        sizes:
+          type: array
+          items:
+            type: string
+          example: ["S", "M", "L"]
+          description: The sizes of the product
+        variants:
+          type: array
+          items:
+            type: object
+            properties:
+              color_code:
+                type: string
+                example: FFFFFF
+                description: The color code of the product
+              size:
+                type: string
+                example: S
+                description: The size of the product
+              stock:
+                type: integer
+                example: 10
+                description: The stock of the product
+        main_image:
+          type: string
+          example: https://example.com/image.jpg
+          description: The main image of the product
+        images:
+          type: array
+          items:
+            type: string
+            example: https://example.com/image.jpg
+          description: The images of the product
+    Color:
+      type: object
+      properties:
+        code:
+          type: string
+          example: FFFFFF
+          description: The color code of the product
+        name:
+          type: string
+          example: White
+          description: The color name of the product
+    Variants:
+      type: object
+      properties:
+        color_code:
+          type: string
+          example: FFFFFF
+          description: The color code of the product
+        size:
+          type: string
+          example: S
+          description: The size of the product
+        stock:
+          type: integer
+          example: 10
+          description: The stock of the product
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+          description: The user ID
+        provider:
+          type: string
+          example: facebook
+          description: The provider of the user
+        name:
+          type: string
+          example: Haha
+          description: The name of the user
+        email:
+          type: string
+          example: hahaisme@haha.whysoserious
+          description: The email of the user
+        picture:
+          type: string
+          example: https://example.com/image.jpg
+          description: The picture of the user
+    UserProfile:
+      type: object
+      properties:
+        provider:
+          type: string
+          example: facebook
+          description: The provider of the user
+        name:
+          type: string
+          example: Haha
+          description: The name of the user
+        email:
+          type: string
+          example: hahaisme@haha.whysoserious
+          description: The email of the user
+        picture:
+          type: string
+          example: https://example.com/image.jpg
+          description: The picture of the user
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
