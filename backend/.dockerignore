@@ -2,6 +2,7 @@
 **/.git
 **/.DS_Store
 **/node_modules
+**/logs
 
 Dockerfile*
 docker-compose*
@@ -9,3 +10,4 @@ docker-compose*
 .git
 .gitignore
 .vscode
+.env
