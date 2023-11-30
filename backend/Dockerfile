@@ -19,8 +19,5 @@ COPY . .
 # 暴露容器的端口
 EXPOSE 5000
 
-# 设置 logs 文件夹为容器内的工作目录
-WORKDIR /app/backend/logs
-
 # 运行应用
 CMD node app.js

@@ -47,6 +47,14 @@ module.exports = {
     return [400, "Id Missing"];
   },
 
+  classIdMissing: () => {
+    return [400, "Class Id Missing"];
+  },
+
+  examIdMissing: () => {
+    return [400, "Exam Id Missing"];
+  },
+
   tokenMissing: () => {
     return [401, "Token Missing"];
   },
@@ -69,10 +77,6 @@ module.exports = {
   
   queryNotFound: () => {
     return [404, "Query Not Found"];
-  },
-
-  paymentFailed: () => {
-    return [400, "Payment Failed"];
   },
 
   queryFailed: () => {

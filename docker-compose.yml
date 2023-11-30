@@ -8,6 +8,8 @@ services:
     image: adeliu42/gpass-backend:latest
     ports:
       - "5000:5000"
+    volumes:
+      - ./backend/logs:/app/logs
     env_file:
       - ./backend/.env
   nginx:
