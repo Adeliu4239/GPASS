@@ -4,6 +4,7 @@ const errorRes = require("../utils/errorResponse");
 const contentType = require("content-type");
 const s3Helper = require("../utils/s3Helper");
 const poolConnection = require("../utils/dbConnection");
+const main = require("package.json");
 // const redisClient = require('../middleware/redis');
 
 const examController = {
@@ -78,30 +79,30 @@ const examController = {
       if (!classId) {
         await connection.rollback();
         const deleteKeys = [];
-        if ( req.mainFileUpload && req.mainFileUpload.location) {
-          deleteKeys.push(req.mainFileUpload.key);
+        if (req.files["main_file"] && req.files["main_file"][0]) {
+          deleteKeys.push(req.files["main_file"][0].key);
         }
-        if (req.ansFileUpload && req.ansFileUpload.location) {
-          deleteKeys.push(req.ansFileUpload.key);
+        if (req.files["ans_file"] && req.files["ans_file"][0]) {
+          deleteKeys.push(req.files["ans_file"][0].key);
         }
-        if (req.sheetFileUploads) {
-          deleteKeys.push(...req.sheetFileUploads.map((file) => file.key));
+        if (req.files["sheet_files"]) {
+          deleteKeys.push(...req.files["sheet_files"].map((file) => file.key));
         }
         await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
         const [errorCode, errorMessage] = errorRes.queryFailed();
         return res.status(errorCode).json({ error: errorMessage });
       }
       let sheet_files = [];
-      if (req.sheetFileUploads) {
-        sheet_files = req.sheetFileUploads.map((file) => file.location);
+      if (req.files["sheet_files"]) {
+        sheet_files = req.files["sheet_files"].map((file) => file.location);
       }
-
+      console.log(req.files["main_file"]);
       const mainFileLocation =
-        req.mainFileUpload && req.mainFileUpload.location
+        req.files["main_file"] && req.files["main_file"][0]
           ? req.files["main_file"][0].location
           : null;
       const ansFileLocation =
-        req.ansFileUpload && req.ansFileUpload.location
+        req.files["ans_file"] && req.files["ans_file"][0]
           ? req.files["ans_file"][0].location
           : null;
 
@@ -122,14 +123,14 @@ const examController = {
       if (!result) {
         await connection.rollback();
         const deleteKeys = [];
-        if (req.mainFileUpload && req.mainFileUpload.location) {
-          deleteKeys.push(req.mainFileUpload.key);
+        if (req.files["main_file"] && req.files["main_file"][0]) {
+          deleteKeys.push(req.files["main_file"][0].key);
         }
-        if (req.ansFileUpload && req.ansFileUpload.location) {
-          deleteKeys.push(req.ansFileUpload.key);
+        if (req.files["ans_file"] && req.files["ans_file"][0]) {
+          deleteKeys.push(req.files["ans_file"][0].key);
         }
-        if (req.sheetFileUploads) {
-          deleteKeys.push(...req.sheetFileUploads.map((file) => file.key));
+        if (req.files["sheet_files"]) {
+          deleteKeys.push(...req.files["sheet_files"].map((file) => file.key));
         }
         await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
         const [errorCode, errorMessage] = errorRes.queryFailed();
