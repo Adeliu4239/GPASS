@@ -18,17 +18,10 @@ const s3Storage = multerS3({
     cb(null, { fieldname: file.fieldname });
   },
   key: (req, file, cb) => {
-    const fileName = file.originalname;
-
-    // 檢查檔名中是否包含中文字符
-    const hasChineseCharacters = /[\u4e00-\u9fa5]/.test(fileName);
-
-    // 如果包含中文字符，進行 URL 編碼
-    const encodedFileName = hasChineseCharacters
-      ? encodeURIComponent(fileName)
-      : fileName;
-
+    const encodedFileName = Buffer.from(file.originalname, 'latin1').toString('utf8');
     const filePath = "gpass/exams/" + encodedFileName;
+    console.log(filePath);
+    // const filePath = "gpass/exams/" + fileName;
     cb(null, filePath);
   },
 });
