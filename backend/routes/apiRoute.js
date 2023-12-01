@@ -6,6 +6,6 @@ const userRoute = require('./api/userRoute');
 const examRoute = require('./api/examRoute');
 
 router.use(`/${API_VERSION}/user`, userRoute);
-router.use(`/${API_VERSION}/exam`, examRoute);
+router.use(`/${API_VERSION}/exams`, examRoute);
 
 module.exports = router;

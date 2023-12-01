@@ -11,13 +11,13 @@ router.get("/detail/:examId", examController.getExamById);
 router.post(
   "/upload",
   uploadFiles.upLoadFlies().fields([
-    { name: "mainFile", maxCount: 1 },
-    { name: "ansFile", maxCount: 1 },
-    { name: "sheetFiles", maxCount: 10 },
+    { name: "main_file", maxCount: 1 },
+    { name: "ans_file", maxCount: 1 },
+    { name: "sheet_files", maxCount: 10 },
   ]),
   examController.uploadExam
 );
-// router.put("/:examId", examController.updateExam);
+router.put("/:examId", examController.updateExam);
 // router.delete("/:examId", examController.deleteExam);
 
 module.exports = router;

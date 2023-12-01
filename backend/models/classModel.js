@@ -10,6 +10,9 @@ exports.getClassId = async (className) => {
   const queryParams = [className];
   try {
     const [rows] = await connection.query(query, queryParams);
+    if (rows.length === 0) {
+      return null;
+    }
     return rows[0].id;
   } catch (err) {
     console.error(err);
