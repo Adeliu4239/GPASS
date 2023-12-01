@@ -1,109 +1,71 @@
 openapi: 3.0.0
 info:
-  title: STYLiSH API
+  title: GPASS API
   version: 1.0.0
   description: |-
-    This is the API documentation for the STYLiSH project.
+    This is the API documentation for the GPASS project.
   contact:
     email: hahaisme@haha.WhySoSerious
 
 tags:
-  - name: products
-    description: Everything about products
+  - name: exams
+    description: Everything about your exams
 
 paths:
-  /api/1.0/products:
+  /api/1.0/exams/upload:
     post:
       tags:
-        - products
-      summary: Add a new product to the store
-      description: Use this request to add a new product to the store
-      operationId: addProduct
+        - exams
+      summary: Upload exams
+      description: Use this request to upload exams
+      operationId: uploadExams
       requestBody:
-        description: Product object that needs to be added to the store
+        description: Exam object that needs to be uploaded
         required: true
         content:
           multipart/form-data:
             schema:
               type: object
               properties:
-                category:
+                className:
                   type: string
-                  description: The category of the product
-                title:
+                  description: The class name of the exam
+                grade:
                   type: string
-                  description: The title of the product
-                description:
+                  description: The grade of the exam
+                type:
                   type: string
-                  description: The description of the product
-                price:
-                  type: number
-                  description: The price of the product
-                texture:
+                  description: The type of the exam
+                year:
                   type: string
-                  description: The texture of the product
-                wash:
+                  description: The year of the exam
+                teacher:
                   type: string
-                  description: The wash of the product
-                place:
-                  type: string
-                  description: The place of the product
-                note:
-                  type: string
-                  description: The note of the product
-                story:
-                  type: string
-                  description: The story of the product
-                colors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      code:
-                        type: string
-                        description: The color code of the product
-                      name:
-                        type: string
-                        description: The color name of the product
-                  description: The colors of the product
-                sizes:
-                  type: array
-                  items:
-                    type: string
-                  description: The sizes of the product
-                variants:
-                  type: array
-                  description: The variants of the product
-                  items:
-                    type: object
-                    properties:
-                      color_code:
-                        type: string
-                        description: The color code of the product
-                      size:
-                        type: string
-                        description: The size of the product
-                      stock:
-                        type: integer
-                        description: The stock of the product
-                main_image:
+                  description: The teacher of the exam
+                main_file:
                   type: string
                   format: binary
                   description: The main image of the product
-                images:
+                ans_file:
+                  type: string
+                  format: binary
+                  description: The images of the product
+                sheet_files:
                   type: array
                   items:
                     type: string
                     format: binary
                   description: The images of the product
+                has_ans:
+                  type: boolean
+                  description: Whether the exam has answer
+                  example: true
               required:
-                - category
-                - title
-                - price
-                - colors
-                - sizes
-                - variants
-                - main_image
+                - type
+                - year
+                - teacher
+                - main_file
+                - has_ans
 
       responses:
         "200":
@@ -139,21 +101,21 @@ paths:
                 description: The error message
               example:
                 message: Internal server error
-  /api/1.0/products/{category}:
+  /api/1.0/exams/{classId}:
     get:
       tags:
-        - products
-      summary: Get products by category
-      description: Use this request to get products by category
-      operationId: getProductsByCategory
+        - exams
+      summary: Get exams
+      description: Use this request to get exams
+      operationId: getExams
       parameters:
-        - name: category
+        - name: classId
           in: path
-          description: The category of the product
+          description: The class ID
           required: true
           schema:
             type: string
-          example: accessories
+          example: 1
         - name: paging
           in: query
           description: The paging of the search result
@@ -164,13 +126,13 @@ paths:
             default: null
       responses:
         "200":
-          description: Products retrieved successfully
+          description: Exams retrieved successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Product"
+                  $ref: "#/components/schemas/Exam"
         "400":
           description: Bad request
           content:
@@ -181,14 +143,14 @@ paths:
               example:
                 message: Bad request
         "404":
-          description: Category not found
+          description: Class not found
           content:
             application/json:
               schema:
                 type: string
                 description: The error message
               example:
-                message: Category not found
+                message: Class not found
         "500":
           description: Internal server error
           content:
@@ -198,288 +160,7 @@ paths:
                 description: The error message
               example:
                 message: Internal server error
-  /api/1.0/products/details/:
-    get:
-      tags:
-        - products
-      summary: Get product details by id
-      description: Use this request to get product details by id
-      operationId: getProductDetailsById
-      parameters:
-        - name: id
-          in: query
-          description: The id of the product
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "200":
-          description: Product details retrieved successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Product"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Bad request
-        "404":
-          description: Product not found
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Product not found
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Internal server error
-  /api/1.0/products/search:
-    get:
-      tags:
-        - products
-      summary: Search products
-      description: Use this request to search products
-      operationId: searchProducts
-      parameters:
-        - name: keyword
-          in: query
-          description: The keyword to search
-          required: true
-          schema:
-            type: string
-        - name: paging
-          in: query
-          description: The paging of the search result
-          required: false
-          schema:
-            type: integer
-            format: int64
-            default: null
-      responses:
-        "200":
-          description: Products retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Product"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Bad request
-        "404":
-          description: Product not found
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Product not found
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Internal server error
-  /api/1.0/products/update/{id}:
-    put:
-      tags:
-        - products
-      summary: Update a product
-      description: Use this request to update a product
-      operationId: updateProduct
-      parameters:
-        - name: id
-          in: path
-          description: The id of the product
-          required: true
-          schema:
-            type: integer
-            format: int64
-      requestBody:
-        description: Product object that needs to be updated
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              type: object
-              properties:
-                category:
-                  type: string
-                  description: The category of the product
-                title:
-                  type: string
-                  description: The title of the product
-                description:
-                  type: string
-                  description: The description of the product
-                price:
-                  type: number
-                  description: The price of the product
-                texture:
-                  type: string
-                  description: The texture of the product
-                wash:
-                  type: string
-                  description: The wash of the product
-                place:
-                  type: string
-                  description: The place of the product
-                note:
-                  type: string
-                  description: The note of the product
-                story:
-                  type: string
-                  description: The story of the product
-                colors:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      code:
-                        type: string
-                        description: The color code of the product
-                      name:
-                        type: string
-                        description: The color name of the product
-                  description: The colors of the product
-                sizes:
-                  type: array
-                  items:
-                    type: string
-                  description: The sizes of the product
-                variants:
-                  type: array
-                  description: The variants of the product
-                  items:
-                    type: object
-                    properties:
-                      color_code:
-                        type: string
-                        description: The color code of the product
-                      size:
-                        type: string
-                        description: The size of the product
-                      stock:
-                        type: integer
-                        description: The stock of the product
-                main_image:
-                  type: string
-                  format: binary
-                  description: The main image of the product
-                images:
-                  type: array
-                  items:
-                    type: string
-                    format: binary
-                  description: The images of the product
-      responses:
-        "200":
-          description: Product updated successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Product"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Bad request
-        "415":
-          description: No file uploaded
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Please upload a file
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Internal server error
-  /api/1.0/products/delete/{id}:
-    delete:
-      tags:
-        - products
-      summary: Delete a product
-      description: Use this request to delete a product
-      operationId: deleteProduct
-      parameters:
-        - name: id
-          in: path
-          description: The id of the product
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        "200":
-          description: Product deleted successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Product"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Bad request
-        "404":
-          description: Product not found
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Product not found
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Internal server error
+  
   /api/1.0/user/signup:
     post:
       tags:
@@ -658,124 +339,49 @@ paths:
 
 components:
   schemas:
-    Product:
+    Exam:
       type: object
       properties:
         id:
           type: integer
           format: int64
           example: 1
-          description: The product ID
-        category:
+          description: The exam ID
+        type:
           type: string
-          example: men
-          description: The category of the product
-        title:
+          example: midterm
+          description: The type of the exam
+        teacher:
           type: string
-          example: Stylish Denim Shirt
-          description: The title of the product
-        description:
+          example: Haha
+          description: The teacher of the exam
+        year:
           type: string
-          example: This denim shirt is made from pure cotton denim
-          description: The description of the product
-        price:
-          type: number
-          format: float
-          example: 1999
-          description: The price of the product
-        texture:
-          type: string
-          example: Cotton
-          description: The texture of the product
-        wash:
-          type: string
-          example: Light Wash
-          description: The wash of the product
-        place:
-          type: string
-          example: China
-          description: The place of the product
-        note:
-          type: string
-          example: This is a note
-          description: The note of the product
-        story:
-          type: string
-          example: This is a story
-          description: The story of the product
-        colors:
-          type: array
-          items:
-            type: object
-            properties:
-              code:
-                type: string
-                example: FFFFFF
-                description: The color code of the product
-              name:
-                type: string
-                example: White
-                description: The color name of the product
-          description: The colors of the product
-        sizes:
-          type: array
-          items:
-            type: string
-          example: ["S", "M", "L"]
-          description: The sizes of the product
-        variants:
-          type: array
-          items:
-            type: object
-            properties:
-              color_code:
-                type: string
-                example: FFFFFF
-                description: The color code of the product
-              size:
-                type: string
-                example: S
-                description: The size of the product
-              stock:
-                type: integer
-                example: 10
-                description: The stock of the product
-        main_image:
-          type: string
-          example: https://example.com/image.jpg
-          description: The main image of the product
-        images:
-          type: array
-          items:
-            type: string
-            example: https://example.com/image.jpg
-          description: The images of the product
-    Color:
-      type: object
-      properties:
-        code:
-          type: string
-          example: FFFFFF
-          description: The color code of the product
-        name:
-          type: string
-          example: White
-          description: The color name of the product
-    Variants:
-      type: object
-      properties:
-        color_code:
-          type: string
-          example: FFFFFF
-          description: The color code of the product
-        size:
-          type: string
-          example: S
-          description: The size of the product
-        stock:
+          example: 2020
+          description: The year of the exam
+        rating_id:
           type: integer
-          example: 10
-          description: The stock of the product
+          format: int64
+          example: 1
+          description: The rating ID of the exam
+        main_file:
+          type: string
+          example: https://example.com/file.pdf
+          description: The main file of the exam
+        ans_file:
+          type: string
+          example: https://example.com/file.pdf
+          description: The answer file of the exam
+        sheet_files:
+          type: array
+          items:
+            type: string
+            example: https://example.com/file.pdf
+          description: The sheet files of the exam
+        has_ans:
+          type: boolean
+          example: true
+          description: Whether the exam has answer
     User:
       type: object
       properties:

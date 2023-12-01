@@ -2,7 +2,7 @@ const classModel = require("../models/classModel");
 const examModel = require("../models/examModel");
 const errorRes = require("../utils/errorResponse");
 const contentType = require("content-type");
-const s3Helper = require("./s3Helper");
+const s3Helper = require("../utils/s3Helper");
 const poolConnection = require("../utils/dbConnection");
 // const redisClient = require('../middleware/redis');
 
@@ -78,31 +78,31 @@ const examController = {
       if (!classId) {
         await connection.rollback();
         const deleteKeys = [];
-        if (req.files["mainFile"] && req.files["mainFile"][0]) {
-          deleteKeys.push(req.files["mainFile"][0].key);
+        if ( req.mainFileUpload && req.mainFileUpload.location) {
+          deleteKeys.push(req.mainFileUpload.key);
         }
-        if (req.files["ansFile"] && req.files["ansFile"][0]) {
-          deleteKeys.push(req.files["ansFile"][0].key);
+        if (req.ansFileUpload && req.ansFileUpload.location) {
+          deleteKeys.push(req.ansFileUpload.key);
         }
-        if (req.files["sheetFiles"]) {
-          deleteKeys.push(...req.files["sheetFiles"].map((file) => file.key));
+        if (req.sheetFileUploads) {
+          deleteKeys.push(...req.sheetFileUploads.map((file) => file.key));
         }
         await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
         const [errorCode, errorMessage] = errorRes.queryFailed();
         return res.status(errorCode).json({ error: errorMessage });
       }
-      let sheetFiles = [];
-      if (req.files["sheetFiles"]) {
-        sheetFiles = req.files["sheetFiles"].map((file) => file.location);
+      let sheet_files = [];
+      if (req.sheetFileUploads) {
+        sheet_files = req.sheetFileUploads.map((file) => file.location);
       }
 
       const mainFileLocation =
-        req.files["mainFile"] && req.files["mainFile"][0]
-          ? req.files["mainFile"][0].location
+        req.mainFileUpload && req.mainFileUpload.location
+          ? req.files["main_file"][0].location
           : null;
       const ansFileLocation =
-        req.files["ansFile"] && req.files["ansFile"][0]
-          ? req.files["ansFile"][0].location
+        req.ansFileUpload && req.ansFileUpload.location
+          ? req.files["ans_file"][0].location
           : null;
 
       const exam = {
@@ -110,10 +110,10 @@ const examController = {
         type: req.body.type,
         teacher: req.body.teacher,
         year: req.body.year,
-        mainFile: mainFileLocation,
-        ansFile: ansFileLocation,
-        sheetFiles: sheetFiles,
-        hasAns: req.body.hasAns,
+        main_file: mainFileLocation,
+        ans_file: ansFileLocation,
+        sheet_files: sheet_files.length > 0 ? sheet_files : null,
+        has_ans: req.body.has_ans,
       };
 
       console.log(exam);
@@ -122,14 +122,14 @@ const examController = {
       if (!result) {
         await connection.rollback();
         const deleteKeys = [];
-        if (req.files["mainFile"] && req.files["mainFile"][0]) {
-          deleteKeys.push(req.files["mainFile"][0].key);
+        if (req.mainFileUpload && req.mainFileUpload.location) {
+          deleteKeys.push(req.mainFileUpload.key);
         }
-        if (req.files["ansFile"] && req.files["ansFile"][0]) {
-          deleteKeys.push(req.files["ansFile"][0].key);
+        if (req.ansFileUpload && req.ansFileUpload.location) {
+          deleteKeys.push(req.ansFileUpload.key);
         }
-        if (req.files["sheetFiles"]) {
-          deleteKeys.push(...req.files["sheetFiles"].map((file) => file.key));
+        if (req.sheetFileUploads) {
+          deleteKeys.push(...req.sheetFileUploads.map((file) => file.key));
         }
         await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
         const [errorCode, errorMessage] = errorRes.queryFailed();
@@ -149,6 +149,93 @@ const examController = {
       if (connection) {
         connection.release();
       }
+    }
+  },
+  updateExam: async (req, res) => {
+    console.log("updateExam");
+    let connection;
+    try {
+      connection = await poolConnection();
+      await connection.beginTransaction();
+
+      const requestHeader = contentType.parse(req.headers["content-type"]);
+      if (requestHeader.type !== "multipart/form-data") {
+        await connection.rollback();
+        const [errorCode, errorMessage] = errorRes.contentTypeError();
+        return res.status(errorCode).json({ error: errorMessage });
+      }
+
+      const examId = req.params ? req.params.examId : null;
+      if (!examId) {
+        await connection.rollback();
+        const [errorCode, errorMessage] = errorRes.examIdMissing();
+        return res.status(errorCode).json({ error: errorMessage });
+      }
+
+      const exam = await examModel.getExamById(examId);
+      if (!exam) {
+        await connection.rollback();
+        const [errorCode, errorMessage] = errorRes.queryFailed();
+        return res.status(errorCode).json({ error: errorMessage });
+      }
+
+      let classId = await classModel.getClassId(req.body.className);
+      if (!classId) {
+        const grade = req.body.grade;
+        const className = req.body.className;
+        classId = await classModel.createClass(className, grade, connection);
+      }
+      if (!classId) {
+        await connection.rollback();
+        const deleteKeys = [];
+        if (req.files["main_file"] && req.files["main_file"][0]) {
+          deleteKeys.push(req.files["main_file"][0].key);
+        }
+        if (req.files["ans_file"] && req.files["ans_file"][0]) {
+          deleteKeys.push(req.files["ans_file"][0].key);
+        }
+        if (req.files["sheet_files"]) {
+          deleteKeys.push(...req.files["sheet_files"].map((file) => file.key));
+        }
+        await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
+        const [errorCode, errorMessage] = errorRes.queryFailed();
+        return res.status(errorCode).json({ error: errorMessage });
+      }
+      let sheet_files = [];
+      if (req.files["sheet_files"]) {
+        sheet_files = req.files["sheet_files"].map((file) => file.location);
+      }
+
+      const mainFile =
+        req.files["main_file"] && req.files["main_file"][0]
+          ? req.files["main_file"][0]
+          : null;
+      const ansFile =
+        req.files["ans_file"] && req.files["ans_file"][0]
+          ? req.files["ans_file"][0]
+          : null;
+
+      const mainFileLocation = mainFile ? mainFile.location : exam.main_file;
+      const ansFileLocation = ansFile ? ansFile.location : exam.ans_file;
+
+      const deleteKeys = [];
+      if (mainFile && exam.main_file) {
+        deleteKeys.push(exam.main_file);
+      }
+      if (ansFile && exam.ans_file) {
+        deleteKeys.push(exam.ans_file);
+      }
+      if (req.files["sheet_files"]) {
+        deleteKeys.push(...exam.sheet_files);
+      }
+      await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
+    } catch (err) {
+      console.error(err);
+      if (connection) {
+        await connection.rollback();
+      }
+      const [errorCode, errorMessage] = errorRes.dbConnectFailed();
+      return res.status(errorCode).json({ error: errorMessage });
     }
   },
 };
