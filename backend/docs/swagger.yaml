@@ -45,17 +45,17 @@ paths:
                 main_file:
                   type: string
                   format: binary
-                  description: The main image of the product
+                  description: The main image of the exam
                 ans_file:
                   type: string
                   format: binary
-                  description: The images of the product
+                  description: The images of the exam
                 sheet_files:
                   type: array
                   items:
                     type: string
                     format: binary
-                  description: The images of the product
+                  description: The images of the exam
                 has_ans:
                   type: boolean
                   description: Whether the exam has answer
@@ -69,11 +69,11 @@ paths:
 
       responses:
         "200":
-          description: Product added successfully
+          description: Exam uploaded successfully
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Product"
+                $ref: "#/components/schemas/Exam"
         "400":
           description: Bad request
           content:
@@ -115,7 +115,7 @@ paths:
           required: true
           schema:
             type: string
-          example: 1
+          example: 7
         - name: paging
           in: query
           description: The paging of the search result
@@ -160,7 +160,200 @@ paths:
                 description: The error message
               example:
                 message: Internal server error
-  
+  /api/1.0/exams/details/{examId}:
+    get:
+      tags:
+        - exams
+      summary: Get exam details
+      description: Use this request to get exam details
+      operationId: getExamDetails
+      parameters:
+        - name: examId
+          in: path
+          description: The exam ID
+          required: true
+          schema:
+            type: string
+          example: 14
+      responses:
+        "200":
+          description: Exam details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exam"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Exam not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Exam not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+    put:
+      tags:
+        - exams
+      summary: Update exam details
+      description: Use this request to update exam details
+      operationId: updateExamDetails
+      parameters:
+        - name: examId
+          in: path
+          description: The exam ID
+          required: true
+          schema:
+            type: string
+          example: 14
+      requestBody:
+        description: Exam object that needs to be updated
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                classId:
+                  type: string
+                  description: The class ID of the exam
+                  example: 9
+                className:
+                  type: string
+                  description: The class name of the exam
+                type:
+                  type: string
+                  description: The type of the exam
+                year:
+                  type: string
+                  description: The year of the exam
+                teacher:
+                  type: string
+                  description: The teacher of the exam
+                main_file:
+                  type: string
+                  format: binary
+                  description: The main image of the exam
+                ans_file:
+                  type: string
+                  format: binary
+                  description: The images of the exam
+                sheet_files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The images of the exam
+                has_ans:
+                  type: boolean
+                  description: Whether the exam has answer
+                  example: true
+              required:
+                - classId
+              #   - type
+              #   - year
+              #   - teacher
+              #   - main_file
+              #   - has_ans
+      responses:
+        "200":
+          description: Exam details updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exam"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Exam not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Exam not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+    delete:
+      tags:
+        - exams
+      summary: Delete exam
+      description: Use this request to delete exam
+      operationId: deleteExam
+      parameters:
+        - name: examId
+          in: path
+          description: The exam ID
+          required: true
+          schema:
+            type: string
+          example: 14
+      responses:
+        "200":
+          description: Exam deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exam"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Exam not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Exam not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
   /api/1.0/user/signup:
     post:
       tags:

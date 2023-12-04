@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
   res.send("exam");
 });
 router.get("/:classId", examController.getExamList);
-router.get("/detail/:examId", examController.getExamById);
+router.get("/details/:examId", examController.getExamById);
 router.post(
   "/upload",
   uploadFiles.upLoadFlies().fields([
@@ -17,7 +17,16 @@ router.post(
   ]),
   examController.uploadExam
 );
-router.put("/:examId", examController.updateExam);
+router.put(
+  "/details/:examId",
+  uploadFiles.upLoadFlies().fields([
+    { name: "main_file", maxCount: 1 },
+    { name: "ans_file", maxCount: 1 },
+    { name: "sheet_files", maxCount: 10 },
+  ]),
+  examController.updateExam
+);
+router.delete("/details/:examId", examController.deleteExam);
 // router.delete("/:examId", examController.deleteExam);
 
 module.exports = router;
