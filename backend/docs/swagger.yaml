@@ -588,6 +588,8 @@ paths:
       summary: Update exercise
       description: Use this request to update exercise
       operationId: updateExercise
+      security:
+        - bearerAuth: []
       parameters:
         - name: exerciseId
           in: path
@@ -596,6 +598,12 @@ paths:
           schema:
             type: string
           example: 2
+        # - name: Authorization
+        #   in: header
+        #   description: The authorization token
+        #   required: true
+        #   schema:
+        #     type: string
       requestBody:
         description: Exercise object that needs to be updated
         required: true
@@ -657,6 +665,8 @@ paths:
       summary: Delete exercise
       description: Use this request to delete exercise
       operationId: deleteExercise
+      security:
+        - bearerAuth: []
       parameters:
         - name: exerciseId
           in: path
@@ -707,6 +717,8 @@ paths:
       summary: Upload exercises
       description: Use this request to upload exercises
       operationId: uploadExercises
+      security:
+        - bearerAuth: []
       parameters:
         - name: examId
           in: path
@@ -826,6 +838,8 @@ paths:
       summary: Upload answers
       description: Use this request to upload answers
       operationId: uploadAnswers
+      security:
+        - bearerAuth: []
       parameters:
         - name: exerciseId
           in: path
@@ -894,6 +908,8 @@ paths:
       summary: Update answer
       description: Use this request to update answer
       operationId: updateAnswer
+      security:
+        - bearerAuth: []
       parameters:
         - name: answerId
           in: path
@@ -961,6 +977,8 @@ paths:
       summary: Delete answer
       description: Use this request to delete answer
       operationId: deleteAnswer
+      security:
+        - bearerAuth: []
       parameters:
         - name: answerId
           in: path

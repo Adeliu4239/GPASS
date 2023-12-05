@@ -83,6 +83,7 @@ const answerController = {
       connection = await poolConnection();
       const answerId = req.params.answerId;
       const userId = req.user.id;
+      const image = req.file? req.file : null;
       if (!answerId) {
         const [errorCode, errorMessage] = errorRes.answerIdMissing();
         return res.status(errorCode).json({ error: errorMessage });

@@ -37,7 +37,7 @@ exports.getAnswerById = async (answerId) => {
   try {
     const [rows] = await connection.query(query, queryParams);
     if (rows.length === 0) {
-      return res.status(404).json({ error: "Answer not found" });
+      return null;
     }
     const answer = rows[0];
     return answer;

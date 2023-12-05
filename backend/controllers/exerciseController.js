@@ -165,7 +165,7 @@ const exerciseController = {
         const [errorCode, errorMessage] = errorRes.noThingToUpdate();
         return res.status(errorCode).json({ error: errorMessage });
       }
-
+      
       const checkExerciseResult = await exerciseModel.getExerciseById(exerciseId);
 
       if (!checkExerciseResult || checkExerciseResult.deleted_at) {
@@ -198,6 +198,7 @@ const exerciseController = {
         content,
         creator,
       };
+      console.log(exercise);
       const result = await exerciseModel.updateExercise(exerciseId, exercise, connection);
       if (!result) {
         const [errorCode, errorMessage] = errorRes.dbConnectFailed();

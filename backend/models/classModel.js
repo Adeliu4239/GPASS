@@ -1,5 +1,23 @@
 const poolConnection = require("../utils/dbConnection");
 
+exports.getAllClasses = async () => {
+  const connection = await poolConnection();
+  const query = `
+            SELECT id, name, grade
+            FROM classes
+            WHERE deleted_at IS NULL
+            `;
+  try {
+    const [rows] = await connection.query(query);
+    return rows;
+  } catch (err) {
+    console.error(err);
+    return null;
+  } finally {
+    connection.release();
+  }
+}
+
 exports.getClassId = async (className) => {
   const connection = await poolConnection();
   const query = `
