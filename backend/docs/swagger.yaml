@@ -526,6 +526,243 @@ paths:
                 description: The error message
               example:
                 message: Internal server error
+  /api/1.0/exercises/details/{exerciseId}:
+    get:
+      tags:
+        - exercises
+      summary: Get exercise
+      description: Use this request to get exercise
+      operationId: getExercise
+      parameters:
+        # - name: examId
+        #   in: path
+        #   description: The exam ID
+        #   required: true
+        #   schema:
+        #     type: string
+        #   example: 14
+        - name: exerciseId
+          in: path
+          description: The exercise ID
+          required: true
+          schema:
+            type: string
+          example: 2
+      responses:
+        "200":
+          description: Exercise retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Exercise not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Exercise not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
+    put:
+      tags:
+        - exercises
+      summary: Update exercise
+      description: Use this request to update exercise
+      operationId: updateExercise
+      parameters:
+        - name: exerciseId
+          in: path
+          description: The exercise ID
+          required: true
+          schema:
+            type: string
+          example: 2
+      requestBody:
+        description: Exercise object that needs to be updated
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: The question of the exercise
+                content:
+                  type: string
+                  description: The content of the exercise
+                exercise_files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The images of the exercise
+      responses:
+        "200":
+          description: Exercise updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "404":
+          description: Exercise not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "415":
+          description: No file uploaded
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+    delete:
+      tags:
+        - exercises
+      summary: Delete exercise
+      description: Use this request to delete exercise
+      operationId: deleteExercise
+      parameters:
+        - name: exerciseId
+          in: path
+          description: The exercise ID
+          required: true
+          schema:
+            type: string
+          example: 2
+      responses:
+        "200":
+          description: Exercise deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Exercise"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "404":
+          description: Exercise not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "415":
+          description: No file uploaded
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+  /api/1.0/exercises/upload/{examId}:
+    post:
+      tags:
+        - exercises
+      summary: Upload exercises
+      description: Use this request to upload exercises
+      operationId: uploadExercises
+      parameters:
+        - name: examId
+          in: path
+          description: The exam ID
+          required: true
+          schema:
+            type: string
+          example: 14
+      requestBody:
+        description: Exercise object that needs to be uploaded
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  description: The question of the exercise
+                content:
+                  type: string
+                  description: The content of the exercise
+                exercise_files:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: The images of the exercise
+      responses:
+        "200":
+          description: Exercise uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExerciseList"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "415":
+          description: No file uploaded
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
 components:
   schemas:
     Exam:
@@ -652,8 +889,50 @@ components:
           type: string
           example: 2020-01-01 00:00:00
           description: The deleted time of the exercise
-
-
+    Exercise:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+          description: The exercise ID
+        exam_id:
+          type: integer
+          format: int64
+          example: 1
+          description: The exam ID
+        question:
+          type: string
+          example: 2+2=?
+          description: The question of the exercise
+        content:
+          type: string
+          example: 4
+          description: The content of the exercise
+        creator_id:
+          type: integer
+          format: int64
+          example: 1
+          description: The creator ID of the exercise
+        created_at:
+          type: string
+          example: 2020-01-01 00:00:00
+          description: The created time of the exercise
+        updated_at:
+          type: string
+          example: 2020-01-01 00:00:00
+          description: The updated time of the exercise
+        deleted_at:
+          type: string
+          example: 2020-01-01 00:00:00
+          description: The deleted time of the exercise
+        images:
+          type: array
+          items:
+            type: string
+            example: https://example.com/image.jpg
+          description: The images of the exercise
   securitySchemes:
     bearerAuth:
       type: http

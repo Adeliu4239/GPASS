@@ -83,8 +83,16 @@ module.exports = {
     return [400, "Image Size Error"];
   },
   
+  notYourExercise: () => {
+    return [403, "Not Your Exercise"];
+  },
+  
   queryNotFound: () => {
     return [404, "Query Not Found"];
+  },
+
+  noThingToUpdate: () => {
+    return [400, "No Thing To Update"];
   },
 
   queryFailed: () => {

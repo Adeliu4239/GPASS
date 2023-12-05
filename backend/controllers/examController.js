@@ -165,7 +165,6 @@ const examController = {
         const [errorCode, errorMessage] = errorRes.contentTypeError();
         return res.status(errorCode).json({ error: errorMessage });
       }
-
       const examId = req.params ? req.params.examId : null;
       if (!examId) {
         await connection.rollback();

@@ -10,6 +10,9 @@ const s3 = new S3Client({
 })
 
 const deleteS3Objects = async (keys, bucket) => {
+  if (!keys || !bucket) {
+    return;
+  }
   const deleteParams = {
     Bucket: bucket,
     Delete: {
