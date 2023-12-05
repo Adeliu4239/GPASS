@@ -10,7 +10,7 @@ router.get("/:classId", examController.getExamList);
 router.get("/details/:examId", examController.getExamById);
 router.post(
   "/upload",
-  uploadFiles.upLoadFlies().fields([
+  uploadFiles.upLoadFlies(`gpass/exams`).fields([
     { name: "main_file", maxCount: 1 },
     { name: "ans_file", maxCount: 1 },
     { name: "sheet_files", maxCount: 10 },

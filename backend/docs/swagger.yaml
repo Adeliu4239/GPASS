@@ -354,68 +354,6 @@ paths:
                 description: The error message
               example:
                 message: Internal server error
-  /api/1.0/user/signup:
-    post:
-      tags:
-        - user
-      summary: Sign up
-      description: Use this request to sign up
-      operationId: signUp
-      requestBody:
-        description: User object that needs to be signed up
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  description: The name of the user
-                email:
-                  type: string
-                  description: The email of the user
-                password:
-                  type: string
-                  description: The password of the user
-              required:
-                - name
-                - email
-                - password
-      responses:
-        "200":
-          description: User signed up successfully
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/User"
-        "400":
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Bad request
-        "409":
-          description: Email already exists
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Email already exists
-        "500":
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: string
-                description: The error message
-              example:
-                message: Internal server error
   /api/1.0/user/signin:
     post:
       tags:
@@ -529,7 +467,65 @@ paths:
                 description: The error message
               example:
                 message: Internal server error
-
+  /api/1.0/exercises/{examId}:
+    get:
+      tags:
+        - exercises
+      summary: Get exercises
+      description: Use this request to get exercises
+      operationId: getExercises
+      parameters:
+        - name: examId
+          in: path
+          description: The exam ID
+          required: true
+          schema:
+            type: string
+          example: 14
+        - name: paging
+          in: query
+          description: The paging of the search result
+          required: false
+          schema:
+            type: integer
+            format: int64
+            default: null
+      responses:
+        "200":
+          description: Exercises retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ExerciseList"
+        "400":
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Bad request
+        "404":
+          description: Exam not found
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Exam not found
+        "500":
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: string
+                description: The error message
+              example:
+                message: Internal server error
 components:
   schemas:
     Exam:
@@ -595,10 +591,10 @@ components:
           type: string
           example: hahaisme@haha.whysoserious
           description: The email of the user
-        picture:
+        photo:
           type: string
           example: https://example.com/image.jpg
-          description: The picture of the user
+          description: The photo of the user
     UserProfile:
       type: object
       properties:
@@ -614,10 +610,50 @@ components:
           type: string
           example: hahaisme@haha.whysoserious
           description: The email of the user
-        picture:
+        photo:
           type: string
           example: https://example.com/image.jpg
-          description: The picture of the user
+          description: The photo of the user
+    ExerciseList:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+          description: The exercise ID
+        exam_id:
+          type: integer
+          format: int64
+          example: 1
+          description: The exam ID
+        question:
+          type: string
+          example: 2+2=?
+          description: The question of the exercise
+        content:
+          type: string
+          example: 4
+          description: The content of the exercise
+        creator_id:
+          type: integer
+          format: int64
+          example: 1
+          description: The creator ID of the exercise
+        created_at:
+          type: string
+          example: 2020-01-01 00:00:00
+          description: The created time of the exercise
+        updated_at:
+          type: string
+          example: 2020-01-01 00:00:00
+          description: The updated time of the exercise
+        deleted_at:
+          type: string
+          example: 2020-01-01 00:00:00
+          description: The deleted time of the exercise
+
+
   securitySchemes:
     bearerAuth:
       type: http

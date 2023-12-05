@@ -23,10 +23,10 @@ exports.isEmailExist = async (email) => {
 exports.createUser = async (user) => {
   const connection = await poolConnection();
   const query = `
-    INSERT INTO users (provider, name, email, password)
+    INSERT INTO users (name, email, photo, provider)
     VALUES (?, ?, ?, ?)
     `;
-  const queryParams = [user.provider, user.name, user.email, user.password];
+  const queryParams = [user.name, user.email, user.photo, user.provider];
   try {
     const result = await connection.query(query, queryParams);
     return result[0].insertId;
@@ -41,7 +41,7 @@ exports.createUser = async (user) => {
 exports.getUserByEmail = async (email) => {
   const connection = await poolConnection();
   const query = `
-    SELECT id, name, email, password, picture, role
+    SELECT id, name, email, photo, provider
     FROM users
     WHERE email = ?
     `;
@@ -64,7 +64,7 @@ exports.getUserByEmail = async (email) => {
 exports.getUserById = async (id) => {
   const connection = await poolConnection();
   const query = `
-    SELECT provider, name, email, picture
+    SELECT provider, name, email, photo
     FROM users
     WHERE id = ?
     `;
@@ -75,6 +75,7 @@ exports.getUserById = async (id) => {
       return null;
     }
     const user = rows[0];
+    console.log(user);
     return user;
   } catch (err) {
     console.error(err);

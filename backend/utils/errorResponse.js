@@ -26,7 +26,11 @@ module.exports = {
   jsonParseError: ()=> {
     return [400, "JSON Parse Error"];
   },
-  
+
+  emailNotFound: () => {
+    return [403, "Signin Failed - Email not Found"];
+  },
+
   emailExist: () => {
     return [409, "Email Already Existed"];
   },
@@ -53,6 +57,10 @@ module.exports = {
 
   examIdMissing: () => {
     return [400, "Exam Id Missing"];
+  },
+
+  exerciseIdMissing: () => {
+    return [400, "Exercise Id Missing"];
   },
 
   tokenMissing: () => {

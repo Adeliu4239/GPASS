@@ -12,7 +12,7 @@ module.exports = {
     const payload = {
       id: user.id,
       name: user.name,
-      role: user.role,
+      // role: user.role,
     };
 
     const token = jwt.sign(payload, process.env.TOKEN_SECRET, {

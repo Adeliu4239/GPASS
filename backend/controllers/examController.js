@@ -69,7 +69,7 @@ const examController = {
         const [errorCode, errorMessage] = errorRes.contentTypeError();
         return res.status(errorCode).json({ error: errorMessage });
       }
-
+      
       let classId = await classModel.getClassId(req.body.className);
       if (!classId) {
         const grade = req.body.grade;
@@ -213,7 +213,27 @@ const examController = {
         req.files["ans_file"] && req.files["ans_file"][0]
           ? req.files["ans_file"][0].location
           : null;
-      console.log("mainFileLocation", mainFileLocation);
+      if (mainFileLocation) {
+        const deleteKeys = [];
+        const mainFileKey = exam.main_file.replace("https://ade-stylish.s3.ap-northeast-1.amazonaws.com/", "");
+        const examFileKeyDecoded = decodeURIComponent(mainFileKey);
+        deleteKeys.push(examFileKeyDecoded);
+        await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
+      }
+      if (ansFileLocation) {
+        const deleteKeys = [];
+        const ansFileKey = exam.ans_file.replace("https://ade-stylish.s3.ap-northeast-1.amazonaws.com/", "");
+        const ansFileKeyDecoded = decodeURIComponent(ansFileKey);
+        deleteKeys.push(ansFileKeyDecoded);
+        await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
+      }
+      if (sheet_files.length > 0) {
+        const deleteKeys = [];
+        const sheetFileKeys = exam.sheet_files.map((file) => file.replace("https://ade-stylish.s3.ap-northeast-1.amazonaws.com/", ""));
+        const sheetFileKeysDecoded = sheetFileKeys.map((file) => decodeURIComponent(file));
+        deleteKeys.push(...sheetFileKeysDecoded);
+        await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
+      }
       const newExam = {
         classId: classId,
         type: req.body.type ? req.body.type : exam.type,

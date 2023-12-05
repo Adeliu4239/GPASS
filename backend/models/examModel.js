@@ -1,4 +1,3 @@
-const e = require("express");
 const poolConnection = require("../utils/dbConnection");
 
 exports.getExamList = async (classId, paging) => {

@@ -12,6 +12,7 @@ const logger = require('./utils/logger');
 const healthyCheckerRoute = require('./routes/healthyChecker');
 const apiRoute = require('./routes/apiRoute');
 const adminRoute = require('./routes/adminRoute');
+const authRoute = require('./routes/authRoute');
 const docsRoute = require('./routes/docsRoute');
 const loginRoute = require('./routes/loginRoute');
 
@@ -53,6 +54,7 @@ app.use('/api', apiRoute);
 app.use('/docs', docsRoute);
 app.use("/login", loginRoute);
 app.use('/admin', adminRoute);
+app.use('/auth', authRoute);
 
 app.get('/', (req, res) => {
     res.send('<h1 style="text-align: center; padding: 20px;">Hello, My Server!</h1>');
