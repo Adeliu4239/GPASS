@@ -87,6 +87,10 @@ module.exports = {
     return [403, "Not Your Exercise"];
   },
   
+  notAuthorized: () => {
+    return [403, "Not Authorized"];
+  },
+  
   queryNotFound: () => {
     return [404, "Query Not Found"];
   },
