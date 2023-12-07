@@ -8,11 +8,13 @@ const answerRoute = require('./api/answerRoute');
 const userRoute = require('./api/userRoute');
 const examRoute = require('./api/examRoute');
 const exerciseRoute = require('./api/exerciseRoute');
+const classRoute = require('./api/classRoute');
 
 router.use(`/${API_VERSION}/answers`, answerRoute);
 router.use(`/${API_VERSION}/user`, userRoute);
 router.use(`/${API_VERSION}/exams`, examRoute);
 router.use(`/${API_VERSION}/exercises`, exerciseRoute);
+router.use(`/${API_VERSION}/classes`, classRoute);
 
 router.use(`/${API_VERSION}/admin`, authorization, (req, res) => {
     res.status(200).json({ data: 'ok' });
