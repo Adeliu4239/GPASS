@@ -36,7 +36,10 @@ const userController = {
           },
         };
         res.cookie("token", token);
-        return res.status(200).json({ data: responseData });
+        res.cookie("userId", userExist.id);
+        res.cookie("userName", userExist.name);
+        res.cookie("userPhoto", userExist?.photo || null);
+        return res.redirect('/');
       }
       const userId = await userModel.createUser(user);
       user.id = userId;
@@ -54,7 +57,10 @@ const userController = {
         },
       };
       res.cookie("token", token);
-      return res.status(200).json({ data: responseData });
+      res.cookie("userId", userId);
+      res.cookie("userName", user.name);
+      res.cookie("userPhoto", user?.picture || null);
+      return res.redirect('/');
     } catch (error) {
       console.log(error);
       const [errorCode, errorMessage] = errorRes.dbConnectFailed();

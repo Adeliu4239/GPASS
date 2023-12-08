@@ -1,86 +1,111 @@
-'use client';
+"use client";
 
-import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { Input } from '@nextui-org/react';
-import SearchIcon from '@/components/Filter/SearchIcon';
-import CustomSelect from '@/components/Class/CustomSelect';
-import CustomTable from '@/components/Class/CustomTable';
-
-// const data = [
-//   {
-//     "id": 17,
-//     "type": "期中",
-//     "teacher": "黃宜侯",
-//     "year": 111,
-//     "rating_id": null,
-//     "main_file": "https://ade-stylish.s3.ap-northeast-1.amazonaws.com/gpass/exams/Midterm%201.pdf",
-//     "ans_file": "https://ade-stylish.s3.ap-northeast-1.amazonaws.com/gpass/exams/Midterm%201%20%28answers%29.pdf",
-//     "sheet_files": null,
-//     "has_ans": 1,
-//     "class_id": 10,
-//     "class": "總體經濟學"
-//   },
-//   {
-//     "id": 18,
-//     "type": "期中",
-//     "teacher": "黃宜侯",
-//     "year": 111,
-//     "rating_id": null,
-//     "main_file": "https://ade-stylish.s3.ap-northeast-1.amazonaws.com/gpass/exams/Midterm%202.pdf",
-//     "ans_file": "https://ade-stylish.s3.ap-northeast-1.amazonaws.com/gpass/exams/Midterm%202%20%28answers%29.pdf",
-//     "sheet_files": null,
-//     "has_ans": 1,
-//     "class_id": 10,
-//     "class": "總體經濟學"
-//   },
-//   {
-//     "id": 18,
-//     "type": "期中",
-//     "teacher": "黃宜侯",
-//     "year": 111,
-//     "rating_id": null,
-//     "main_file": "https://ade-stylish.s3.ap-northeast-1.amazonaws.com/gpass/exams/Midterm%202.pdf",
-//     "ans_file": "https://ade-stylish.s3.ap-northeast-1.amazonaws.com/gpass/exams/Midterm%202%20%28answers%29.pdf",
-//     "sheet_files": null,
-//     "has_ans": 1,
-//     "class_id": 10,
-//     "class": "總體經濟學"
-//   }
-// ]
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import useGetExams from "@/hooks/exams/useGetExams";
+import { Input } from "@nextui-org/react";
+import SearchIcon from "@/components/Filter/SearchIcon";
+import CustomSelect from "@/components/Class/CustomSelect";
+import CustomTable from "@/components/Class/CustomTable";
+import { Spinner } from "@nextui-org/react";
 
 export default function Wrapper({
   searchParams,
-  data,
+  classId,
 }: {
   searchParams: any;
-  data: any;
+  classId: any;
 }) {
-  const [inputValue, setInputValue] = useState(searchParams.classid ?? '');
+  const [inputValue, setInputValue] = useState(searchParams.classid ?? "");
   const router = useRouter();
   const pathname = usePathname();
-  const [exams, setExams] = useState(data);
-  console.log(exams);
+  // const [exams, setExams] = useState(data);
   const [type, setType] = useState({
-    label: 'Type',
-    values: ['All', '期中', '期末', '小考', '其他'],
-    value: searchParams.Type ?? 'All',
+    displayLabel: "類型",
+    label: "type",
+    values: ["All", "期中", "期末", "小考", "講義", "其他"],
+    value: searchParams.type ?? "All",
   });
   const [year, setYear] = useState({
-    label: 'Year',
-    values: ['All', '110', '109', '108', '107'],
-    value: searchParams.Year ?? 'All',
+    displayLabel: "學年度",
+    label: "year",
+    values: ["All", "110", "109", "108", "107"],
+    value: searchParams.year ?? "All",
   });
   const [teacher, setTeacher] = useState({
-    label: 'Teacher',
-    values: ['All', '黃宜侯', '黃宜侯', '黃宜侯', '黃宜侯'],
-    value: searchParams.Teacher ?? 'All',
+    displayLabel: "老師",
+    label: "teacher",
+    values: ["All", "黃宜侯", "黃宜侯", "黃宜侯", "黃宜侯"],
+    value: searchParams.teacher ?? "All",
   });
-  const [date, setDate] = useState({
-    label: 'Date',
-    values: ['All', 'Today', 'Last Week', 'Last 2 Weeks', 'Last Month'],
-    value: searchParams.Date ?? 'Today',
+  const [hasAns, setHasAns] = useState({
+    displayLabel: "有無答案",
+    label: "hasAns",
+    values: ["All", "有", "無"],
+    value: searchParams.hasAns ?? "All",
   });
+
+  const { exams, loading } = useGetExams(
+    classId,
+    teacher.value,
+    year.value,
+    type.value,
+    hasAns.value
+  );
+  console.log("exams", exams);
+
+  useEffect(() => {
+    setInputValue(searchParams.classid ?? "");
+
+    if (exams?.data?.length === 0) {
+      return;
+    }
+
+    // 使用 Set 來儲存不重複的值
+    const uniqueTypes:Set<any> = new Set();
+    const uniqueYears:Set<any> = new Set();
+    const uniqueTeachers:Set<any> = new Set();
+
+    // 使用 map 來迭代 exams 數組
+    exams.forEach((exam:any) => {
+      // 添加 type 到 uniqueTypes Set
+      uniqueTypes.add(exam.type);
+      // 添加 year 到 uniqueYears Set
+      uniqueYears.add(exam.year);
+      // 添加 teacher 到 uniqueTeachers Set
+      uniqueTeachers.add(exam.teacher);
+    });
+
+    // 將 Set 轉換回數組
+    const uniqueTypeArray = Array.from(uniqueTypes);
+    const uniqueYearArray = Array.from(uniqueYears);
+    const uniqueTeacherArray = Array.from(uniqueTeachers);
+
+    setType({
+      displayLabel: "類型",
+      label: "type",
+      values: ["All", ...uniqueTypeArray],
+      value: searchParams.type ?? "All",
+    });
+    setYear({
+      displayLabel: "學年度",
+      label: "year",
+      values: ["All", ...uniqueYearArray],
+      value: searchParams.year ?? "All",
+    });
+    setTeacher({
+      displayLabel: "老師",
+      label: "teacher",
+      values: ["All", ...uniqueTeacherArray],
+      value: searchParams.teacher ?? "All",
+    });
+    setHasAns({
+      displayLabel: "有無答案",
+      label: "hasAns",
+      values: ["All", "有", "無"],
+      value: searchParams.hasAns ?? "All",
+    });
+  }, [searchParams, exams]);
 
   return (
     <div className="flex w-full flex-col gap-5">
@@ -93,20 +118,20 @@ export default function Wrapper({
           startContent={<SearchIcon />}
           radius="sm"
           onClear={() => {
-            setInputValue('');
+            setInputValue("");
           }}
           onValueChange={(value) => {
             setInputValue(value);
             const newSearchParams = new URLSearchParams(searchParams);
-            if (value !== '') {
-              newSearchParams.set('empId', value);
+            if (value !== "") {
+              newSearchParams.set("teacher", value);
             } else {
-              newSearchParams.delete('empId');
+              newSearchParams.delete("teacher");
             }
             router.push(`${pathname}?${newSearchParams.toString()}`);
           }}
           classNames={{
-            inputWrapper: 'h-full border border-[#2f3037] bg-[#f4f4f5] w-52',
+            inputWrapper: "h-full border border-[#2f3037] bg-[#f4f4f5] w-52",
           }}
         />
 
@@ -126,15 +151,22 @@ export default function Wrapper({
           searchParams={searchParams}
         />
         <CustomSelect
-          state={date}
-          onChange={setDate}
+          state={hasAns}
+          onChange={setHasAns}
           searchParams={searchParams}
         />
       </div>
-      <CustomTable
-        data={exams}
-        onClickRow={setInputValue}
-      />
+      {loading && (
+        <div className="flex w-full justify-center">
+          <Spinner color="primary" />
+        </div>
+      )}
+      {(exams.length === 0 || exams?.data?.length === 0) && !loading && (
+        <div className="flex w-full justify-center">No data</div>
+      )}
+      {exams.length !== 0 && exams?.data?.length !== 0 && !loading && (
+        <CustomTable data={exams} onClickRow={setInputValue} />
+      )}
     </div>
   );
 }

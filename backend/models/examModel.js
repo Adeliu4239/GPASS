@@ -1,8 +1,8 @@
 const poolConnection = require("../utils/dbConnection");
 
-exports.getExamList = async (classId, paging) => {
+exports.getExamList = async (classId, paging, teacher, year, type, hasAns) => {
   const connection = await poolConnection();
-  if(!paging) paging = 0;
+  if (!paging) paging = 0;
   const pageSize = 10;
   const offset = parseInt(paging, 10) * pageSize;
   let query = `
@@ -14,6 +14,22 @@ exports.getExamList = async (classId, paging) => {
   if (classId) {
     query += " AND class_id = ?";
     queryParams.push(classId);
+  }
+  if (teacher && teacher !== "All") {
+    query += " AND teacher = ?";
+    queryParams.push(teacher);
+  }
+  if (year && year !== "All") {
+    query += " AND year = ?";
+    queryParams.push(year);
+  }
+  if (type && type !== "All") {
+    query += " AND type = ?";
+    queryParams.push(type);
+  }
+  if (hasAns && hasAns !== "All") {
+    query += " AND has_ans = ?";
+    queryParams.push(hasAns);
   }
   query += " ORDER BY year DESC LIMIT ? OFFSET ?";
   queryParams.push(pageSize);
@@ -46,7 +62,7 @@ exports.getExamById = async (examId) => {
   } finally {
     connection.release();
   }
-}
+};
 
 exports.uploadExam = async (exam, connection) => {
   const query = `
@@ -61,7 +77,7 @@ exports.uploadExam = async (exam, connection) => {
     exam.main_file,
     exam.ans_file,
     exam.sheet_files,
-    exam.has_ans === 'true' ? 1 : 0,
+    exam.has_ans,
   ];
   try {
     const result = await connection.query(query, queryParams);
@@ -87,7 +103,7 @@ exports.updateExam = async (examId, exam, connection) => {
     exam.main_file,
     exam.ans_file,
     exam.sheet_files,
-    exam.has_ans === 'true' ? 1 : 0,
+    exam.has_ans === "true" ? 1 : 0,
     examId,
   ];
   try {
@@ -99,7 +115,7 @@ exports.updateExam = async (examId, exam, connection) => {
   } finally {
     connection.release();
   }
-}
+};
 
 exports.deleteExam = async (examId) => {
   const connection = await poolConnection();
@@ -118,4 +134,4 @@ exports.deleteExam = async (examId) => {
   } finally {
     connection.release();
   }
-}
+};

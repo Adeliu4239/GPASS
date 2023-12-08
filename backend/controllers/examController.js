@@ -12,6 +12,7 @@ const examController = {
     try {
       // const className = req.params? req.params.class : null;
       const classId = req.params ? req.params.classId : null;
+
       console.log(classId);
       if (!classId) {
         const [errorCode, errorMessage] = errorRes.classIdMissing();
@@ -19,7 +20,13 @@ const examController = {
       }
       const paging = req.query?.paging || 0;
       console.log(paging);
-      const examList = await examModel.getExamList(classId, paging);
+
+      const teacher = req.query?.teacher || null;
+      const year = req.query?.year || null;
+      const type = req.query?.type || null;
+      const hasAns = req.query?.hasAns || null;
+      console.log(teacher, year, type, hasAns);
+      const examList = await examModel.getExamList(classId, paging, teacher, year, type, hasAns);
       if (!examList) {
         const [errorCode, errorMessage] = errorRes.queryFailed();
         return res.status(errorCode).json({ error: errorMessage });
@@ -77,10 +84,18 @@ const examController = {
         return res.status(errorCode).json({ error: errorMessage });
       }
       
-      let classId = await classModel.getClassId(req.body.className);
+      if(!req.body?.examInfo){
+        await connection.rollback();
+        const [errorCode, errorMessage] = errorRes.bodyMissing();
+        return res.status(errorCode).json({ error: errorMessage });
+      }
+
+      const examInfo = JSON.parse(req.body.examInfo);
+      console.log(examInfo);
+      let classId = await classModel.getClassId(examInfo.className);
       if (!classId) {
-        const grade = req.body.grade;
-        const className = req.body.className;
+        const grade = examInfo.grade;
+        const className = examInfo.className;
         classId = await classModel.createClass(className, grade, connection);
       }
       if (!classId) {
@@ -115,13 +130,13 @@ const examController = {
 
       const exam = {
         classId: classId,
-        type: req.body.type,
-        teacher: req.body.teacher,
-        year: req.body.year,
+        type: examInfo.type,
+        teacher: examInfo.teacher,
+        year: examInfo.year,
         main_file: mainFileLocation,
         ans_file: ansFileLocation,
         sheet_files: sheet_files.length > 0 ? sheet_files : null,
-        has_ans: req.body.has_ans,
+        has_ans: examInfo.hasAns,
       };
 
       console.log(exam);

@@ -1,18 +1,33 @@
 import { useState, useEffect } from "react";
 import Swal from "sweetalert2";
 import createAxiosAuth from "@/api/axiosAuth";
+import useLogout from "@/hooks/useLogout";
 
-export default function useGetExams(clasId: string) {
-  const [exams, setExams] = useState([]);
+interface Exam {
+  id: number;
+  name: string;
+  year: string;
+  type: string;
+  hasAns: boolean;
+  teacher: string;
+  clas: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export default function useGetExams(clasId: string, teacher: any, year: any, type: any, hasAns: any){
+  const [exams, setExams] = <any>useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] =  useState<null | number>(null);
+
+  const { handleLogout } = useLogout();
 
   const getExams = async () => {
     setLoading(true);
     console.log("get exams");
     try {
       const axiosAuth = createAxiosAuth();
-      const response = await axiosAuth.get(`/exams/${clasId}`); //`/exams/${clasId}
+      const response = await axiosAuth.get(`/exams/${clasId}?teacher=${teacher}&year=${year}&type=${type}&hasAns=${hasAns}`);
       console.log("get exams success", response.data);
       setExams(response.data);
       setLoading(false);
@@ -27,7 +42,7 @@ export default function useGetExams(clasId: string) {
   useEffect(() => {
     getExams();
     console.log("first time get exams");
-  }, []);
+  }, [teacher, year, type, hasAns]);
 
   useEffect(() => {
     if (error !== null) {
@@ -44,7 +59,7 @@ export default function useGetExams(clasId: string) {
           text: "Please login again.",
         }).then(() => {
           console.log("expired");
-          // handleLogout();
+          handleLogout();
         });
       } else if (error === 500) {
         Swal.fire({

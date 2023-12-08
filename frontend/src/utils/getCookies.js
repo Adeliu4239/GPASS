@@ -7,10 +7,11 @@ import { parseCookies } from "nookies";
 
 const getCookies = () => {
   const cookies = parseCookies();
-  // const userId = cookies["userId"];
-  // const userName = cookies["userName"];
-  const accessToken = cookies["accessToken"];
-  return { accessToken };
+  const userId = cookies["userId"];
+  const userName = cookies["userName"];
+  const userPhoto = cookies["userPhoto"];
+  const accessToken = cookies["token"];
+  return { userId, userName, userPhoto, accessToken };
 };
 
 export default getCookies;

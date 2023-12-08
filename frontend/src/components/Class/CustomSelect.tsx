@@ -32,7 +32,12 @@ export default function CustomSelect({
       classNames={{
         mainWrapper: 'h-full',
         trigger: 'h-full border border-[#2f3037] bg-[#f4f4f5] w-52',
-        // popover: 'border border-[#2f3037] bg-[#191a24]',
+      }}
+      popoverProps={{
+        classNames: {
+          base: "before:bg-default-200",
+          content: 'border border-[#2f3037] bg-[#f4f4f5]',
+        },
       }}
     >
       {state.values.map((value: any) => (

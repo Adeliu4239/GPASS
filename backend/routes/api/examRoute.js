@@ -9,7 +9,7 @@ router.get("/", (req, res) => {
 router.get("/:classId", examController.getExamList);
 router.get("/details/:examId", examController.getExamById);
 router.post(
-  "/upload",
+  "/",
   uploadFiles.upLoadFlies(`gpass/exams`).fields([
     { name: "main_file", maxCount: 1 },
     { name: "ans_file", maxCount: 1 },

@@ -10,6 +10,8 @@ passport.use(
     },
     function (accessToken, refreshToken, profile, done) {
       // 此處可以處理驗證成功後的操作
+      // 例如將使用者資料存進資料庫
+      console.log(profile);
       return done(null, profile);
     }
   )

@@ -12,7 +12,7 @@ tags:
     description: Everything about your exams
 
 paths:
-  /api/1.0/exams/upload:
+  /api/1.0/exams:
     post:
       tags:
         - exams

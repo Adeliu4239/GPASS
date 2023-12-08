@@ -1,8 +1,13 @@
 "use client";
 
 import Image from "next/image";
+import useLogin from "@/hooks/useLogin";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const { handleLoginWithGoogle, isLoading, error } = useLogin();
+  // const router = useRouter();
+
   return (
     <main className="flex bg-gray-200 min-h-screen  relative p-[15vh] pl-[20vw] pr-[20vw] align-middle">
       <div className=" max-w-5xl w-[50%] items-center justify-center font-mono text-sm lg:flex max-h-[100%] min-h-full  relative bg-[#444444] rounded-tl-xl rounded-bl-xl">
@@ -26,6 +31,7 @@ export default function Login() {
             className="flex justify-center items-center w-[80%] h-12 bg-[#444444] text-white rounded-md hover:bg-[#333333] transition-all duration-200"
             onClick={() => {
               window.open("http://localhost:5000/auth/google", "_blank");
+              // router.push("/");
             }}
           >
             <h1 className="text-2xl font-bold">Login with Google</h1>
