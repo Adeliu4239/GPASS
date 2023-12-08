@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
  
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'GPASS',
 }
   
-export default function LoginLayout({
+export default function ClassPageLayout({
   children,
 }: {
   children: React.ReactNode;

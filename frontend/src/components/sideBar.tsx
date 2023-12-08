@@ -2,28 +2,34 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-
+import useSWR from "swr";
+import axios from "axios";
 interface ClassItem {
   id: number;
   name: string;
   grade: string;
 }
 
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+
 export default function Sidebar({
   show,
   setter,
-  data,
 }: {
   show: boolean;
   setter: any;
-  data: any;
 }) {
+  const { data, error } = useSWR(
+    `${process.env.NEXT_PUBLIC_API_URL}/classes`,
+    fetcher
+  );
+  const [sortedClasses, setSortedClasses] = useState([]);
+  
   // Define our base class
   const className =
     "bg-[#444] w-[250px] transition-[margin-left] ease-in-out duration-500 fixed md:static top-0 bottom-0 left-0 z-40";
   // Append class based on state of sidebar visiblity
   const appendClass = show ? " ml-0" : " ml-[-250px] md:ml-0";
-  const [sortedClasses, setSortedClasses] = useState([]);
   // Clickable menu items
   const MenuItem = ({ name, route }: { name: string; route: string }) => {
     // Highlight menu item based on currently displayed route
@@ -32,7 +38,7 @@ export default function Sidebar({
       pathname == `/class/${route}` ? "text-white" : "text-white/50 hover:text-white";
     return (
       <Link
-        href={route}
+        href={`/class/${route}`}
         onClick={() => {
           setter((oldVal: any) => !oldVal);
         }}

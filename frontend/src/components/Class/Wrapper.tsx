@@ -4,8 +4,8 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { Input } from '@nextui-org/react';
 import SearchIcon from '@/components/Filter/SearchIcon';
-import CustomSelect from '@/components/CustomSelect';
-import CustomTable from '@/components/CustomTable';
+import CustomSelect from '@/components/Class/CustomSelect';
+import CustomTable from '@/components/Class/CustomTable';
 
 // const data = [
 //   {

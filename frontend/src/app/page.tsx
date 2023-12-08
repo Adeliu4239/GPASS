@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <div className="flex bg-gray-200 min-h-screen">
-      <Sidebar show={showSidebar} setter={setShowSidebar} data={data} />
+      <Sidebar show={showSidebar} setter={setShowSidebar}/>
       <main className="flex w-[100%] min-h-screen flex-col items-center justify-between p-24">
         ddd
       </main>
