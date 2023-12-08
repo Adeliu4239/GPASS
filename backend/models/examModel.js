@@ -6,7 +6,7 @@ exports.getExamList = async (classId, paging) => {
   const pageSize = 10;
   const offset = parseInt(paging, 10) * pageSize;
   let query = `
-        SELECT id, type, teacher, year, rating_id, main_file, ans_file, sheet_files, has_ans
+        SELECT id, type, teacher, year, rating_id, main_file, ans_file, sheet_files, has_ans, class_id
         FROM exams
         WHERE deleted_at IS NULL
         `;
@@ -32,7 +32,7 @@ exports.getExamList = async (classId, paging) => {
 exports.getExamById = async (examId) => {
   const connection = await poolConnection();
   const query = `
-        SELECT id, type, teacher, year, rating_id, main_file, ans_file, sheet_files, has_ans
+        SELECT id, type, teacher, year, rating_id, main_file, ans_file, sheet_files, has_ans, class_id
         FROM exams
         WHERE id = ?
         `;

@@ -39,6 +39,28 @@ exports.getClassId = async (className) => {
   }
 };
 
+exports.getClassName = async (classId) => {
+  const connection = await poolConnection();
+  const query = `
+            SELECT name
+            FROM classes
+            WHERE id = ?
+            `;
+  const queryParams = [classId];
+  try {
+    const [rows] = await connection.query(query, queryParams);
+    if (rows.length === 0) {
+      return null;
+    }
+    return rows[0].name;
+  } catch (err) {
+    console.error(err);
+    return null;
+  } finally {
+    connection.release();
+  }
+}
+
 exports.getClassesByGrade = async (grade) => {
   const connection = await poolConnection();
   const query = `

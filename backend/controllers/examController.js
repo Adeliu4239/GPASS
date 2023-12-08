@@ -27,6 +27,10 @@ const examController = {
       if (examList.length === 0) {
         return res.status(200).json({ data: [] });
       }
+      const className = await classModel.getClassName(classId);
+      examList.forEach((exam) => {
+        exam.class = className;
+      });
       console.log(examList);
       res.status(200).json(examList);
     } catch (err) {
@@ -49,6 +53,9 @@ const examController = {
         const [errorCode, errorMessage] = errorRes.queryFailed();
         return res.status(errorCode).json({ error: errorMessage });
       }
+      const className = await classModel.getClassName(exam.class_id);
+      console.log(className);
+      exam.class = className;
       res.status(200).json(exam);
     } catch (err) {
       console.error(err);
