@@ -2,9 +2,8 @@
 
 import Image from "next/image";
 import React, { useState } from "react";
-import useSWR from "swr";
+import useSWR from "@/hooks/useSWR";
 import Sidebar from "@/components/sideBar";
-import Wrapper from "@/components/Class/Wrapper";
 import useGetExamsDetails from "@/hooks/exams/useGetExamsDetails";
 import axios from "axios";
 
@@ -16,8 +15,11 @@ export default function ClassPage({
   searchParams: any;
 }) {
   const [showSidebar, setShowSidebar] = useState(false);
-  const { examDetails, loading } = useGetExamsDetails(params.id);
-  // console.log(exams);
+  const { examDetails, loading } = useGetExamsDetails(params.examId);
+  const { data, error } = useSWR(`${process.env.NEXT_PUBLIC_API_URL}/exercises/${params.examId}`);
+  console.log("examDetails", examDetails);
+  console.log("data", data);
+
   return (
     <div className="flex bg-gray-200 min-h-screen">
       <Sidebar show={showSidebar} setter={setShowSidebar}/>

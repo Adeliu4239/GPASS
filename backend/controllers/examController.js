@@ -7,6 +7,43 @@ const poolConnection = require("../utils/dbConnection");
 // const redisClient = require('../middleware/redis');
 
 const examController = {
+  getAllExams: async (req, res) => {
+    console.log("getAllExams");
+    try {
+      const paging = req.query?.paging || 0;
+      console.log(paging);
+      const className = req.query?.class || null;
+      console.log(req.query);
+      let classId = null;
+      if(className){
+        classId = await classModel.getClassId(className);
+        console.log(className, classId);
+      }        
+      const teacher = req.query?.teacher || null;
+      const year = req.query?.year || null;
+      const type = req.query?.type || null;
+      const hasAns = req.query?.hasAns || null;
+      console.log(teacher, year, type, hasAns);
+      const examList = await examModel.getExamList(classId, paging, teacher, year, type, hasAns);
+      if (!examList) {
+        const [errorCode, errorMessage] = errorRes.queryFailed();
+        return res.status(errorCode).json({ error: errorMessage });
+      }
+      if (examList.length === 0) {
+        return res.status(200).json({ data: [] });
+      }
+      const classNameList = await classModel.getAllClasses();
+      examList.forEach((exam) => {
+        const className = classNameList.find((className) => className.id === exam.class_id);
+        exam.class = className.name;
+      });
+      res.status(200).json(examList);
+    } catch (err) {
+      console.error(err);
+      const [errorCode, errorMessage] = errorRes.dbConnectFailed();
+      return res.status(errorCode).json({ error: errorMessage });
+    }
+  },
   getExamList: async (req, res) => {
     console.log("getExamList");
     try {

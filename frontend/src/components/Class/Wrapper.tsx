@@ -16,7 +16,8 @@ export default function Wrapper({
   searchParams: any;
   classId: any;
 }) {
-  const [inputValue, setInputValue] = useState(searchParams.classid ?? "");
+  const [inputValue, setInputValue] = useState(searchParams.className ?? "");
+  const [className, setClassName] = useState(searchParams.className ?? "");
   const router = useRouter();
   const pathname = usePathname();
   // const [exams, setExams] = useState(data);
@@ -47,6 +48,7 @@ export default function Wrapper({
 
   const { exams, loading } = useGetExams(
     classId,
+    className,
     teacher.value,
     year.value,
     type.value,
@@ -54,8 +56,23 @@ export default function Wrapper({
   );
   console.log("exams", exams);
 
+  const handleKeyDown = (event: any) => {
+    // 檢查是否按下 Enter 鍵（按鍵碼為 13）
+    if (event.key === 'Enter') {
+      const newSearchParams = new URLSearchParams(searchParams);
+      if (inputValue !== '') {
+        newSearchParams.set('className', inputValue);
+        setClassName(inputValue);
+      } else {
+        newSearchParams.delete('className');
+        setClassName('');
+      }
+      router.push(`${pathname}?${newSearchParams.toString()}`);
+    }
+  };
+
   useEffect(() => {
-    setInputValue(searchParams.classid ?? "");
+    setInputValue(searchParams.className);
 
     if (exams?.data?.length === 0) {
       return;
@@ -111,7 +128,7 @@ export default function Wrapper({
     <div className="flex w-full flex-col gap-5">
       <div className="flex h-12 gap-5">
         <Input
-          aria-label="Employee ID input"
+          aria-label="Class"
           isClearable
           variant="bordered"
           value={inputValue}
@@ -119,17 +136,15 @@ export default function Wrapper({
           radius="sm"
           onClear={() => {
             setInputValue("");
+            setClassName("");
+            const newSearchParams = new URLSearchParams(searchParams);
+            newSearchParams.delete("className");
+            router.push(`${pathname}?${newSearchParams.toString()}`);
           }}
           onValueChange={(value) => {
             setInputValue(value);
-            const newSearchParams = new URLSearchParams(searchParams);
-            if (value !== "") {
-              newSearchParams.set("teacher", value);
-            } else {
-              newSearchParams.delete("teacher");
-            }
-            router.push(`${pathname}?${newSearchParams.toString()}`);
           }}
+          onKeyDown={handleKeyDown}
           classNames={{
             inputWrapper: "h-full border border-[#2f3037] bg-[#f4f4f5] w-52",
           }}

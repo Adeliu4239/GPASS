@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Avatar, Image } from "@nextui-org/react";
 import { useRouter, usePathname } from "next/navigation";
 import useSWR from "@/hooks/useSWR";
 import axios from "axios";
@@ -30,12 +30,21 @@ export default function Sidebar({
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
 
+  const [expandedGrade, setExpandedGrade] = useState<string | null>(null);
+
+  const handleGradeClick = (grade: string) => {
+    // 如果已經展開，則收起；如果未展開，則展開
+    setExpandedGrade((prevGrade) => (prevGrade === grade ? null : grade));
+  };
+
+  const pathname = usePathname();
+  const route = pathname.split("/")[2];
   const { handleLogout } = useLogout();
 
   const gradeOrder: string[] = ["大一", "大二", "大三", "選修", "其他"];
   // Define our base class
   const className =
-    "bg-[#444] w-[250px] transition-[margin-left] ease-in-out duration-500 fixed md:static top-0 bottom-0 left-0 z-40 flex flex-col";
+    "bg-[#444] w-[250px] transition-[margin-left] ease-in-out duration-500 fixed md:static top-0 bottom-0 left-0 z-40 flex flex-col max-h-screen";
   // Append class based on state of sidebar visiblity
   const appendClass = show ? " ml-0" : " ml-[-250px] md:ml-0";
   // Clickable menu items
@@ -43,10 +52,11 @@ export default function Sidebar({
     // Highlight menu item based on currently displayed route
     const pathname = usePathname();
     const colorClass =
-      pathname == `/class/${route}` ||
+      pathname.split("/")[2] == `${route}` ||
       (pathname == "/upload" && route == "/upload")
         ? "text-white"
         : "text-white/50 hover:text-white";
+    
     return (
       <Link
         href={route == "/upload" ? route : `/class/${route}`}
@@ -69,7 +79,7 @@ export default function Sidebar({
       }}
     />
   );
-
+  
   console.log(data);
 
   useEffect(() => {
@@ -77,7 +87,10 @@ export default function Sidebar({
     // 將數據按照 grade 分類
     const groupedClasses = classes.reduce(
       (acc: any, currentClass: ClassItem) => {
-        const { grade } = currentClass;
+        const { grade, id} = currentClass;
+        if(id.toString() == route){
+          setExpandedGrade(grade);
+        }
         if (!acc[grade]) {
           acc[grade] = [];
         }
@@ -86,10 +99,19 @@ export default function Sidebar({
       },
       {}
     );
-
+    console.log("path", pathname);
+    // const sortedClasses = gradeOrder.reduce((acc: any, grade) => {
+    //   if (groupedClasses[grade]) {
+    //     acc.push(...groupedClasses[grade]);
+    //   }
+    //   return acc;
+    // }, []);
     const sortedClasses = gradeOrder.reduce((acc: any, grade) => {
       if (groupedClasses[grade]) {
-        acc.push(...groupedClasses[grade]);
+        acc.push({
+          grade,
+          classes: groupedClasses[grade],
+        });
       }
       return acc;
     }, []);
@@ -103,7 +125,6 @@ export default function Sidebar({
       <div className={`${className}${appendClass}`}>
         <div className="p-2 flex">
           <Link href="/">
-            {/*eslint-disable-next-line*/}
             <Image
               src="/gpass-logo.png"
               alt="GPASS Logo"
@@ -113,28 +134,48 @@ export default function Sidebar({
             />
           </Link>
         </div>
-        <div className="flex flex-col flex-grow">
+        <div className="flex flex-col flex-grow max-h-[calc(100vh-144px)] overflow-y-auto">
           {data ? (
-            sortedClasses.map((item: any) => (
-              <MenuItem
-                name={item.name}
-                route={item.id.toString()}
-                key={item.id}
-              />
+            sortedClasses.map((group: any) => (
+              <div key={group.grade}>
+                <div
+                  className={`text-white text-lg font-bold px-6 py-2 cursor-pointer`}
+                  onClick={() => handleGradeClick(group.grade)}
+                  // onMouseEnter={() => handleGradeClick(group.grade)}
+                  // onMouseLeave={() => handleGradeClick(group.grade)}
+                >
+                  {group.grade}
+                  {expandedGrade === group.grade ? (
+                    <span className="float-right">-</span>
+                  ) : (
+                    <span className="float-right">+</span>
+                  )}
+                </div>
+                {expandedGrade === group.grade &&
+                  group.classes.map((item: any) => (
+                    <MenuItem
+                      name={item.name}
+                      route={item.id.toString()}
+                      key={item.id}
+                    />
+                  ))}
+              </div>
             ))
           ) : (
             <></>
           )}
         </div>
-        <div className="flex flex-col">
+        <div className="flex flex-col h-[fit-content] mt-2">
           <MenuItem name={"上傳考古題"} route={"/upload"} key={"upload"} />
           <div className="flex  [&>*]:my-auto text-md px-6 py-3 border-b-[1px] border-b-white/10 text-white items-center justify-between">
-            <Image
-              src={photo ? photo : "/user.svg"}
-              alt="User Photo"
-              width={32}
-              height={32}
+            <Avatar
+              src={photo}
+              size="md"
               className="rounded-full"
+              showFallback
+              name={name ? name : "Unknown User"}
+              isBordered
+              color="default"
             />
             {name ? name : "Unknown User"}
             <Image

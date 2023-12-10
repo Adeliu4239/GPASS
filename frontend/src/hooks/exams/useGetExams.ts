@@ -15,7 +15,7 @@ interface Exam {
   updatedAt: string;
 }
 
-export default function useGetExams(clasId: string, teacher: any, year: any, type: any, hasAns: any){
+export default function useGetExams(clasId: string, classname:any, teacher: any, year: any, type: any, hasAns: any){
   const [exams, setExams] = <any>useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] =  useState<null | number>(null);
@@ -27,7 +27,13 @@ export default function useGetExams(clasId: string, teacher: any, year: any, typ
     console.log("get exams");
     try {
       const axiosAuth = createAxiosAuth();
-      const response = await axiosAuth.get(`/exams/${clasId}?teacher=${teacher}&year=${year}&type=${type}&hasAns=${hasAns}`);
+      if (classname === "All") classname = "";
+      if (teacher === "All") teacher = "";
+      if (year === "All") year = "";
+      if (type === "All") type = "";
+      if (hasAns === "All") hasAns = "";
+      if (!clasId) clasId = "";
+      const response = await axiosAuth.get(`/exams/${clasId}?teacher=${teacher}&year=${year}&type=${type}&hasAns=${hasAns}&class=${classname}`);
       console.log("get exams success", response.data);
       setExams(response.data);
       setLoading(false);

@@ -17,6 +17,7 @@ import {
   ChipProps,
 } from "@nextui-org/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
@@ -39,6 +40,7 @@ export default function CustomTable({
 }) {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [image, setImage] = useState("");
+  const pathname = usePathname();
 
   return (
     <>
@@ -66,7 +68,7 @@ export default function CustomTable({
         isHeaderSticky
         classNames={{
           wrapper:
-            "w-full table-fixed max-h-[39.5rem] border-none rounded-md p-0 mb-5 text-black bg-transparent",
+            "w-full table-fixed max-h-[38.5rem] border-none rounded-md p-0 mb-5 text-black bg-transparent",
           th: "text-base pt-3 pb-3",
           td: "text-base  pt-3 pb-3",
           tr: "hover:bg-[#1f212d] hover:text-white transition-all",
@@ -133,7 +135,7 @@ export default function CustomTable({
                 </TableCell>
                 <TableCell>
                   <Link
-                    href={`/exam/${d.id}`}
+                    href={`${pathname}/exam/${d.id}`}
                     className="h-full hover:underline"
                   >
                     {`>>`}

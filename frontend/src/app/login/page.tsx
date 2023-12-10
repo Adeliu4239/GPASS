@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { Image } from "@nextui-org/react";
 import useLogin from "@/hooks/useLogin";
 import { useRouter } from "next/navigation";
 
@@ -15,8 +15,6 @@ export default function Login() {
           className="relative"
           src="/gpass-logo.png"
           alt="GPASS Logo"
-          layout="fill"
-          objectFit="contain"
         />
       </div>
       <div className=" max-w-5xl w-[50%] items-center  font-mono text-sm lg:flex flex-col max-h-[100%] min-h-full  relative bg-[#f9f9f9] rounded-tr-xl rounded-br-xl justify-around">
