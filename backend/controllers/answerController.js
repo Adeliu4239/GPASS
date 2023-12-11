@@ -3,6 +3,7 @@ const contentType = require("content-type");
 const s3Helper = require("../utils/s3Helper");
 const poolConnection = require("../utils/dbConnection");
 const answerModel = require("../models/answerModel");
+const userModel = require("../models/userModel");
 
 const answerController = {
   getAnswerList: async (req, res) => {
@@ -18,6 +19,17 @@ const answerController = {
       if (!answers) {
         const [errorCode, errorMessage] = errorRes.queryFailed();
         return res.status(errorCode).json({ error: errorMessage });
+      }
+      for (const answer of answers) {
+        if(answer.hide_name === 1){
+          answer.creator_name = "匿名";
+          answer,creator_photo = null;
+        }
+        else{
+          const user = await userModel.getUserById(answer.creator_id);
+          answer.creator_name = user.name;
+          answer.creator_photo = user.photo;
+        }
       }
       return res.status(200).json({ answers });
     } catch (err) {
@@ -54,6 +66,7 @@ const answerController = {
         userId,
         content,
         imageUrl,
+        hideName: req.body.hideName? req.body.hideName : 0,
       };
       const result = await answerModel.createAnswer(answer, connection);
       if (!result) {

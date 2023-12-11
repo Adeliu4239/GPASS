@@ -6,7 +6,7 @@ exports.getAnswerList = async (exerciseId, paging) => {
   const pageSize = 10;
   const offset = parseInt(paging, 10) * pageSize;
   let query = `
-        SELECT id, exercise_id, creator_id, content, created_at, image_url
+        SELECT id, exercise_id, creator_id, content, created_at, image_url, hide_name
         FROM answers
         WHERE deleted_at IS NULL AND exercise_id = ?
         `;
@@ -29,7 +29,7 @@ exports.getAnswerList = async (exerciseId, paging) => {
 exports.getAnswerById = async (answerId) => {
   const connection = await poolConnection();
   const query = `
-        SELECT id, exercise_id, creator_id, content, created_at, image_url
+        SELECT id, exercise_id, creator_id, content, created_at, image_url, hide_name
         FROM answers
         WHERE deleted_at IS NULL AND id = ?
         `;
@@ -51,17 +51,25 @@ exports.getAnswerById = async (answerId) => {
 
 exports.createAnswer = async (answer, connection) => {
   const query = `
-        INSERT INTO answers (exercise_id, creator_id, content, image_url)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO answers (exercise_id, creator_id, content, image_url, hide_name)
+        VALUES (?, ?, ?, ?, ?)
         `;
   const queryParams = [
     answer.exerciseId,
     answer.userId,
     answer.content,
     answer.imageUrl,
+    answer.hideName,
   ];
   try {
     const [result] = await connection.query(query, queryParams);
+    const updateQuery = `
+        UPDATE exercises
+        SET updated_at = CURRENT_TIMESTAMP()
+        WHERE id = ?
+        `;
+    const updateParams = [answer.exerciseId];
+    await connection.query(updateQuery, updateParams);
     const answerId = result.insertId;
     return answerId;
   } catch (err) {

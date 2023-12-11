@@ -174,6 +174,7 @@ const examController = {
         ans_file: ansFileLocation,
         sheet_files: sheet_files.length > 0 ? sheet_files : null,
         has_ans: examInfo.hasAns,
+        hide_name: examInfo.hideName? examInfo.hideName : 0,
       };
 
       console.log(exam);

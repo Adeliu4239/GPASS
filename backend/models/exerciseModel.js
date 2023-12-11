@@ -6,7 +6,7 @@ exports.getExerciseList = async (examId, paging) => {
   const pageSize = 10;
   const offset = parseInt(paging, 10) * pageSize;
   let query = `
-            SELECT id, exam_id, question, created_at, updated_at, deleted_at, hot_id, creator_id
+            SELECT id, exam_id, question, content, created_at, updated_at, deleted_at, hot_id, creator_id, hide_name
             FROM exercises
             WHERE deleted_at IS NULL AND exam_id = ?
             `;
@@ -32,7 +32,7 @@ exports.getExerciseList = async (examId, paging) => {
 exports.getExerciseById = async (exerciseId) => {
   const connection = await poolConnection();
   const query = `
-            SELECT id, exam_id, question, content, created_at, updated_at, deleted_at, hot_id, creator_id
+            SELECT id, exam_id, question, content, created_at, updated_at, deleted_at, hot_id, creator_id, hide_name
             FROM exercises
             WHERE id = ?
             `;
@@ -62,8 +62,8 @@ exports.getExerciseById = async (exerciseId) => {
 
 exports.createExercise = async (examId, exercise, connection) => {
   const query = `
-        INSERT INTO exercises (exam_id, question, content, creator_id)
-        VALUES (?, ?, ?, ?)
+        INSERT INTO exercises (exam_id, question, content, creator_id, hide_name)
+        VALUES (?, ?, ?, ?, ?)
         `;
   const queryParams = [examId, exercise.question, exercise.content, exercise.creator];
   try {

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Avatar, Image } from "@nextui-org/react";
+import Image from "next/image";
+import { Avatar} from "@nextui-org/react";
 import { useRouter, usePathname } from "next/navigation";
 import useSWR from "@/hooks/useSWR";
 import axios from "axios";
@@ -176,6 +177,7 @@ export default function Sidebar({
               name={name ? name : "Unknown User"}
               isBordered
               color="default"
+							imgProps={{ referrerPolicy: "no-referrer" }}
             />
             {name ? name : "Unknown User"}
             <Image

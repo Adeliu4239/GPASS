@@ -3,6 +3,7 @@ const contentType = require("content-type");
 const s3Helper = require("../utils/s3Helper");
 const poolConnection = require("../utils/dbConnection");
 const exerciseModel = require("../models/exerciseModel");
+const userModel = require("../models/userModel");
 
 const exerciseController = {
   getExerciseList: async (req, res) => {
@@ -19,6 +20,22 @@ const exerciseController = {
         const [errorCode, errorMessage] = errorRes.dbConnectFailed();
         return res.status(errorCode).json({ error: errorMessage });
       }
+      for (const exercise of exerciseList) {
+        if (exercise.hide_name) {
+          exercise.creator_name = "匿名";
+          exercise.creator_photo = null;
+        } else {
+          const create_user = await userModel.getUserById(exercise.creator_id);
+          if (create_user) {
+            exercise.creator_name = create_user.name;
+            exercise.creator_photo = create_user.photo;
+          } else {
+            exercise.creator_name = "匿名";
+            exercise.creator_photo = null;
+          }
+        }
+      }
+
       return res.status(200).json({ data: exerciseList });
     } catch (error) {
       console.log(error);
@@ -39,6 +56,19 @@ const exerciseController = {
         const [errorCode, errorMessage] = errorRes.dbConnectFailed();
         return res.status(errorCode).json({ error: errorMessage });
       }
+      if (exercise.hide_name) {
+        exercise.creator_name = "匿名";
+        exercise.creator_photo = null;
+      } else {
+        const create_user = await userModel.getUserById(exercise.creator_id);
+        if (create_user) {
+          exercise.creator_name = create_user.name;
+          exercise.creator_photo = create_user.photo;
+        } else {
+          exercise.creator_name = "匿名";
+          exercise.creator_photo = null;
+        }
+      }
       return res.status(200).json({ data: exercise });
     } catch (error) {
       console.log(error);
@@ -56,7 +86,7 @@ const exerciseController = {
       const requestHeader = contentType.parse(req.headers["content-type"]);
       if (requestHeader.type !== "multipart/form-data") {
         await connection.rollback();
-        const deleteKeys  = [];
+        const deleteKeys = [];
         if (req.files) {
           deleteKeys.push(...req.files.map((file) => file.key));
         }
@@ -68,7 +98,7 @@ const exerciseController = {
       const examId = req.params ? req.params.examId : null;
       if (!examId) {
         await connection.rollback();
-        const deleteKeys  = [];
+        const deleteKeys = [];
         if (req.files) {
           deleteKeys.push(...req.files.map((file) => file.key));
         }
@@ -78,7 +108,7 @@ const exerciseController = {
       }
 
       const question = req.body.question;
-      const content = req.body? req.body.content : null;
+      const content = req.body ? req.body.content : null;
       const creator = req.user.id;
       if (!examId || !question) {
         const [errorCode, errorMessage] = errorRes.bodyMissing();
@@ -89,7 +119,11 @@ const exerciseController = {
         content,
         creator,
       };
-      const exerciseId = await exerciseModel.createExercise(examId, exercise, connection);
+      const exerciseId = await exerciseModel.createExercise(
+        examId,
+        exercise,
+        connection
+      );
       if (!exerciseId) {
         const [errorCode, errorMessage] = errorRes.dbConnectFailed();
         return res.status(errorCode).json({ error: errorMessage });
@@ -100,11 +134,15 @@ const exerciseController = {
       }
       for (let i = 0; i < imageUrls.length; i++) {
         console.log(imageUrls[i]);
-        let result = await exerciseModel.createExerciseImage(exerciseId, imageUrls[i], connection);
+        let result = await exerciseModel.createExerciseImage(
+          exerciseId,
+          imageUrls[i],
+          connection
+        );
         console.log(result);
         if (!result) {
           await connection.rollback();
-          const deleteKeys  = [];
+          const deleteKeys = [];
           if (req.files) {
             deleteKeys.push(...req.files.map((file) => file.key));
           }
@@ -118,11 +156,11 @@ const exerciseController = {
     } catch (error) {
       console.log(error);
       await connection.rollback();
-      const deleteKeys  = [];
-        if (req.files) {
-          deleteKeys.push(...req.files.map((file) => file.key));
-        }
-        await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
+      const deleteKeys = [];
+      if (req.files) {
+        deleteKeys.push(...req.files.map((file) => file.key));
+      }
+      await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
       const [errorCode, errorMessage] = errorRes.dbConnectFailed();
       return res.status(errorCode).json({ error: errorMessage });
     } finally {
@@ -139,7 +177,7 @@ const exerciseController = {
       const requestHeader = contentType.parse(req.headers["content-type"]);
       if (requestHeader.type !== "multipart/form-data") {
         await connection.rollback();
-        const deleteKeys  = [];
+        const deleteKeys = [];
         if (req.files) {
           deleteKeys.push(...req.files.map((file) => file.key));
         }
@@ -151,7 +189,7 @@ const exerciseController = {
       const exerciseId = req.params ? req.params.exerciseId : null;
       if (!exerciseId) {
         await connection.rollback();
-        const deleteKeys  = [];
+        const deleteKeys = [];
         if (req.files) {
           deleteKeys.push(...req.files.map((file) => file.key));
         }
@@ -160,17 +198,19 @@ const exerciseController = {
         return res.status(errorCode).json({ error: errorMessage });
       }
 
-      if(!req.body.question && !req.body.content && !req.files) {
+      if (!req.body.question && !req.body.content && !req.files) {
         await connection.rollback();
         const [errorCode, errorMessage] = errorRes.noThingToUpdate();
         return res.status(errorCode).json({ error: errorMessage });
       }
-      
-      const checkExerciseResult = await exerciseModel.getExerciseById(exerciseId);
+
+      const checkExerciseResult = await exerciseModel.getExerciseById(
+        exerciseId
+      );
 
       if (!checkExerciseResult || checkExerciseResult.deleted_at) {
         await connection.rollback();
-        const deleteKeys  = [];
+        const deleteKeys = [];
         if (req.files) {
           deleteKeys.push(...req.files.map((file) => file.key));
         }
@@ -178,10 +218,10 @@ const exerciseController = {
         const [errorCode, errorMessage] = errorRes.queryNotFound();
         return res.status(errorCode).json({ error: errorMessage });
       }
-      if(checkExerciseResult.creator_id !== req.user.id) {
+      if (checkExerciseResult.creator_id !== req.user.id) {
         console.log(checkExerciseResult.creator_id);
         await connection.rollback();
-        const deleteKeys  = [];
+        const deleteKeys = [];
         if (req.files) {
           deleteKeys.push(...req.files.map((file) => file.key));
         }
@@ -190,8 +230,12 @@ const exerciseController = {
         return res.status(errorCode).json({ error: errorMessage });
       }
 
-      const question = req.body.question? req.body.question : checkExerciseResult.question;
-      const content = req.body.content? req.body.content : checkExerciseResult.content;
+      const question = req.body.question
+        ? req.body.question
+        : checkExerciseResult.question;
+      const content = req.body.content
+        ? req.body.content
+        : checkExerciseResult.content;
       const creator = req.user.id;
       const exercise = {
         question,
@@ -199,7 +243,11 @@ const exerciseController = {
         creator,
       };
       console.log(exercise);
-      const result = await exerciseModel.updateExercise(exerciseId, exercise, connection);
+      const result = await exerciseModel.updateExercise(
+        exerciseId,
+        exercise,
+        connection
+      );
       if (!result) {
         const [errorCode, errorMessage] = errorRes.dbConnectFailed();
         return res.status(errorCode).json({ error: errorMessage });
@@ -219,11 +267,15 @@ const exerciseController = {
       }
       for (let i = 0; i < imageUrls.length; i++) {
         console.log(imageUrls[i]);
-        let result = await exerciseModel.createExerciseImage(exerciseId, imageUrls[i], connection);
+        let result = await exerciseModel.createExerciseImage(
+          exerciseId,
+          imageUrls[i],
+          connection
+        );
         console.log(result);
         if (!result) {
           await connection.rollback();
-          const deleteKeys  = [];
+          const deleteKeys = [];
           if (req.files) {
             deleteKeys.push(...req.files.map((file) => file.key));
           }
@@ -237,11 +289,11 @@ const exerciseController = {
     } catch (error) {
       console.log(error);
       await connection.rollback();
-      const deleteKeys  = [];
-        if (req.files) {
-          deleteKeys.push(...req.files.map((file) => file.key));
-        }
-        await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
+      const deleteKeys = [];
+      if (req.files) {
+        deleteKeys.push(...req.files.map((file) => file.key));
+      }
+      await s3Helper.deleteS3Objects(deleteKeys, process.env.AWS_BUCKET);
       const [errorCode, errorMessage] = errorRes.dbConnectFailed();
       return res.status(errorCode).json({ error: errorMessage });
     }
@@ -254,12 +306,14 @@ const exerciseController = {
         const [errorCode, errorMessage] = errorRes.examIdMissing();
         return res.status(errorCode).json({ error: errorMessage });
       }
-      const checkExerciseResult = await exerciseModel.getExerciseById(exerciseId);
+      const checkExerciseResult = await exerciseModel.getExerciseById(
+        exerciseId
+      );
       if (!checkExerciseResult || checkExerciseResult.deleted_at) {
         const [errorCode, errorMessage] = errorRes.queryNotFound();
         return res.status(errorCode).json({ error: errorMessage });
       }
-      if(checkExerciseResult.creator_id !== req.user.id) {
+      if (checkExerciseResult.creator_id !== req.user.id) {
         console.log(checkExerciseResult.creator_id);
         const [errorCode, errorMessage] = errorRes.notYourExercise();
         return res.status(errorCode).json({ error: errorMessage });
@@ -275,9 +329,7 @@ const exerciseController = {
       const [errorCode, errorMessage] = errorRes.dbConnectFailed();
       return res.status(errorCode).json({ error: errorMessage });
     }
-  }
+  },
 };
-
-
 
 module.exports = exerciseController;
