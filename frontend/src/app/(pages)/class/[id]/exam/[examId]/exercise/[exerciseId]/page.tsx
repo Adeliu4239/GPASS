@@ -12,7 +12,7 @@ import ExamDetailSection from "@/components/Exam/ExamDetailSection";
 import ExerciseAccordion from "@/components/Exercise/ExerciseAccordion";
 import axios from "axios";
 
-export default function ExamPage({ params }: { params: any }) {
+export default function ExercisePage({ params }: { params: any }) {
   const { examDetails, loading } = useGetExamsDetails(params.examId);
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/exercises/${params.examId}`

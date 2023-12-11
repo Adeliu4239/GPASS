@@ -1,5 +1,6 @@
 import React from "react";
 import { Accordion, AccordionItem, Avatar } from "@nextui-org/react";
+import MarkdownRender from "@components/MarkdownRender";
 import transformDate from "@/utils/transformDate";
 import Link from "next/link";
 
@@ -12,7 +13,7 @@ const Subtitle = ({ exercise }: { exercise: any }) => {
 };
 
 export default function ExerciseAccordion({ exercises }: { exercises: any }) {
-  const defaultContent = "這題目沒有內容，請聯絡發問者或是管理員。";
+  const defaultContent = `# 沒有題目內容`;
   const itemClasses = {
     base: "py-0 w-full min-h-[72px] pt-2",
     title: "font-bold text-base text-[#2f3037] flex items-center text-xl",
@@ -80,12 +81,15 @@ export default function ExerciseAccordion({ exercises }: { exercises: any }) {
               imgProps={{ referrerPolicy: "no-referrer" }}
             />
           }
-          title={exercise.question}
+          title={<MarkdownRender content={`### ${exercise.question}`} title />}
           subtitle={<Subtitle exercise={exercise} />}
         >
           <div className="flex items-center gap-2 ml-[64px] mr-2 justify-between">
             <div className="flex-grow">
-              {exercise.content ? exercise.content : defaultContent}
+              <MarkdownRender
+                content={exercise.content ? exercise.content : defaultContent}
+                title={false}
+              />
             </div>
             <div className="w-9">
               <Link
