@@ -33,8 +33,12 @@ export default function ExamDetailSection({
         <div className="flex color-[#2f3037] font-bold text-2xl gap-2">
           {`${examDetails.class} - ${examDetails.teacher} - ${examDetails.type} - ${examDetails.year} 學年度`}
           <div>
-            <Chip color="success" size="lg" variant="flat">
-              {examDetails.has_ans == 1 ? "有" : "無"}答案
+            <Chip
+              color={`${examDetails.has_ans === 1 ? "success" : "warning"}`}
+              size="lg"
+              variant="flat"
+            >
+              {examDetails.has_ans === 1 ? "有" : "無"}答案
             </Chip>
           </div>
         </div>

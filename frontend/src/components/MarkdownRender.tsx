@@ -4,9 +4,10 @@ import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
 
-export default function MarkdownRender({ content, title }: { content: string , title: boolean}) {
-  const markdownStyle = {
-    fontSize: "1.5rem",
+export default function MarkdownRender({ content, style }: { content: string , style: any}) {
+
+  const markdownBackgroundStyle = {
+    backgroundColor: "transparent",
   };
 
   return (
@@ -14,7 +15,8 @@ export default function MarkdownRender({ content, title }: { content: string , t
       source={content}
       remarkPlugins={[remarkGfm, remarkMath]}
       rehypePlugins={[rehypeKatex]}
-      style={title ? markdownStyle : {}}
+      style={{ ...style, ...markdownBackgroundStyle }}
+      className="markdown-body"
     />
   );
 }

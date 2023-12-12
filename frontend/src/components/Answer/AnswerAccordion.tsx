@@ -1,29 +1,22 @@
 import React from "react";
-import { Accordion, AccordionItem, Avatar } from "@nextui-org/react";
+import { Accordion, AccordionItem, Avatar, Image } from "@nextui-org/react";
 import MarkdownRender from "@components/MarkdownRender";
 import transformDate from "@/utils/transformDate";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
-const Subtitle = ({ exercise }: { exercise: any }) => {
-  const date = transformDate(exercise.created_at);
-  let subtitle = `${exercise.creator_name} - Created at ${date}`;
-  if (exercise.updated_at)
-    subtitle = subtitle.concat(` - Updated at ${transformDate(exercise.updated_at)}`);
+const Subtitle = ({ answer }: { answer: any }) => {
+  const date = transformDate(answer.created_at);
+  let subtitle = `Created at ${date}`;
+  if (answer.updated_at)
+    subtitle = subtitle.concat(
+      ` - Updated at ${transformDate(answer.updated_at)}`
+    );
   return <div className="text-sm text-[#888]">{subtitle}</div>;
 };
 
-export default function ExerciseAccordion({ exercises }: { exercises: any }) {
-  const defaultContent = `# 沒有題目內容`;
-  const pathname = usePathname();
-
-  const markdownTitleStyle = {
-    fontSize: "1.5rem",
-    lineHeight: "2rem",
-  };
-
+export default function AnswerAccordion({ answers }: { answers: any }) {
   const itemClasses = {
-    base: "py-0 w-full min-h-[72px] pt-2",
+    base: "py-0 w-full min-h-[80px] pt-3",
     title: "font-bold text-base text-[#2f3037] flex items-center text-xl",
     trigger:
       "px-2 py-0 data-[hover=true]:bg-default-100 rounded-lg h-14 flex items-center",
@@ -31,11 +24,19 @@ export default function ExerciseAccordion({ exercises }: { exercises: any }) {
     content: "text-medium",
   };
 
+  const contentMarkdownStyle = {
+    fontSize: "1.5rem",
+    lineHeight: "2rem",
+  };
+
+  const ids = answers.data.map((answer: any) => answer.id.toString());
+
   return (
     <Accordion
       variant="splitted"
       className="w-full gap-4 mx-auto"
       itemClasses={itemClasses}
+      defaultExpandedKeys={ids}
       motionProps={{
         variants: {
           enter: {
@@ -73,39 +74,43 @@ export default function ExerciseAccordion({ exercises }: { exercises: any }) {
         },
       }}
     >
-      {exercises.data.map((exercise: any) => (
+      {answers.data.map((answer: any) => (
         <AccordionItem
-          key={exercise.id}
-          aria-label={exercise.question}
+          key={answer.id}
+          aria-label={answer.creator_name}
           startContent={
             <Avatar
               isBordered
               color="default"
               radius="lg"
-              src={
-                exercise.creator_photo ? exercise.creator_photo : "/user.svg"
-              }
-              ImgComponent={exercise.creator_photo ? "img" : "svg"}
+              src={answer.creator_photo ? answer.creator_photo : "/user.svg"}
+              ImgComponent={answer.creator_photo ? "img" : "svg"}
               imgProps={{ referrerPolicy: "no-referrer" }}
             />
           }
-          title={<MarkdownRender content={`${exercise.question}`} style={markdownTitleStyle} />}
-          subtitle={<Subtitle exercise={exercise} />}
+          title={
+            <MarkdownRender
+              content={`${answer.creator_name}`}
+              style={contentMarkdownStyle}
+            />
+          }
+          subtitle={<Subtitle answer={answer} />}
         >
-          <div className="flex items-center gap-2 ml-[64px] mr-2 justify-between">
+          <div className="flex flex-col gap-4 ml-[64px] mr-10 justify-between mb-6">
             <div className="flex-grow">
               <MarkdownRender
-                content={exercise.content ? exercise.content : defaultContent}
-                style={{}}
+                content={answer.content}
+                style={{ fontSize: "1.25rem", lineHeight: "2rem" }}
               />
             </div>
-            <div className="w-9">
-              <Link
-                href={`${pathname}/exercise/${exercise.id}`}
-              >
-                {`>>`}
-              </Link>
-            </div>
+            {answer.image_url && (
+              <Image
+                removeWrapper
+                className={"w-[80%] self-center"}
+                src={answer.image_url}
+                alt="answer image"
+              />
+            )}
           </div>
         </AccordionItem>
       ))}

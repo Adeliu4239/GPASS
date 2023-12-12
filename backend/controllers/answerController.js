@@ -31,7 +31,7 @@ const answerController = {
           answer.creator_photo = user.photo;
         }
       }
-      return res.status(200).json({ answers });
+      return res.status(200).json({ data: answers });
     } catch (err) {
       console.error(err);
       const [errorCode, errorMessage] = errorRes.dbConnectFailed();

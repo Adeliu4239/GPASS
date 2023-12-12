@@ -7,6 +7,11 @@ const nextConfig = {
         hostname: "lh3.googleusercontent.com",
         pathname: "**",
       },
+      {
+        protocol: "https",
+        hostname: 'ade-stylish.s3.ap-northeast-1.amazonaws.com',
+        pathname: '**'
+      }
     ],
   },
   async redirects() {
