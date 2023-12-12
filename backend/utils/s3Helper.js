@@ -13,6 +13,9 @@ const deleteS3Objects = async (keys, bucket) => {
   if (!keys || !bucket || keys.length === 0) {
     return;
   }
+  if (typeof keys === "string") {
+    keys = [keys];
+  }
   const deleteParams = {
     Bucket: bucket,
     Delete: {

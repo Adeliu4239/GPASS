@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 router.get("/:examId", exerciseController.getExerciseList);
 router.get("/details/:exerciseId", exerciseController.getExerciseById);
 router.post(
-  "/upload/:examId",
+  "/:examId",
   uploadFiles
     .upLoadFlies(`gpass/exercises`)
     .array("exercise_files", Infinity),

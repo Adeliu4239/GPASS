@@ -20,7 +20,7 @@ exports.getExerciseList = async (examId, paging) => {
     //   return res.status(404).json({ error: "Exercise not found" });
     // }
     const exercises = rows;
-    return  exercises;
+    return exercises;
   } catch (err) {
     console.error(err);
     return null;
@@ -61,11 +61,19 @@ exports.getExerciseById = async (exerciseId) => {
 };
 
 exports.createExercise = async (examId, exercise, connection) => {
+  console.log("haha");
   const query = `
         INSERT INTO exercises (exam_id, question, content, creator_id, hide_name)
         VALUES (?, ?, ?, ?, ?)
         `;
-  const queryParams = [examId, exercise.question, exercise.content, exercise.creator];
+  const hideName = exercise.hideName ? 1 : 0;
+  const queryParams = [
+    examId,
+    exercise.question,
+    exercise.content,
+    exercise.creator,
+    hideName,
+  ];
   try {
     const [rows] = await connection.query(query, queryParams);
     const exerciseId = rows.insertId;
@@ -89,7 +97,7 @@ exports.createExerciseImage = async (exerciseId, imageUrl, connection) => {
     console.error(err);
     return null;
   }
-}
+};
 
 exports.updateExercise = async (exerciseId, exercise, connection) => {
   const query = `
@@ -105,7 +113,7 @@ exports.updateExercise = async (exerciseId, exercise, connection) => {
     console.error(err);
     return null;
   }
-}
+};
 
 exports.deleteExercise = async (exerciseId) => {
   const connection = await poolConnection();
@@ -122,6 +130,4 @@ exports.deleteExercise = async (exerciseId) => {
     console.error(err);
     return null;
   }
-}
-
-
+};

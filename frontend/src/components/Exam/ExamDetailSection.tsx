@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Swal from "sweetalert2";
 import {
   Modal,
   ModalContent,
@@ -14,34 +15,82 @@ import {
   Input,
   Link,
 } from "@nextui-org/react";
+import useCreateExercise from "@/hooks/useCreateExercise";
 
 export default function ExamDetailSection({
   examDetails,
 }: {
   examDetails: any;
 }) {
+  const [question, setQuestion] = useState<string>("");
+  const [content, setContent] = useState<string>("");
+  const [hideName, setHideName] = useState<boolean>(false);
+  const [selectFiles, setSelectFiles] = useState<File[] | null>(null);
+  const filesInputRef = React.useRef<HTMLInputElement>(null);
+
+  const { uploadData } = useCreateExercise();
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    console.log("files", files);
+    if (files) {
+      setSelectFiles(Array.from(files));
+    }
+  };
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  
+  const handleSubmit = async () => {
+    if (question) {
+      let uploadProps = {
+        question,
+        content,
+        exercise_files: selectFiles,
+        hideName: hideName,
+      };
+      console.log("uploadProps", uploadProps);
+      try {
+        await uploadData(uploadProps, examDetails.id);
+        setQuestion("");
+        setContent("");
+        setHideName(false);
+        setSelectFiles(null);
+      } catch (e) {
+        console.error(e);
+        Swal.fire({
+          icon: 'error',
+          title: 'Upload failed',
+          text: 'An error occurred while uploading your question.',
+        });
+      }
+    } else {
+      // 顯示警告的 SweetAlert
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing question',
+        text: 'Please enter a question before submitting.',
+      });
+    }
+  };
 
   return (
-    <div className="flex flex-col p-8 border border-[#2f3037] rounded-xl bg-[#fcfcfc] w-full mx-auto min-h-[240px] justify-between">
+    <div className="flex flex-col p-8 border border-[#2f3037] rounded-xl bg-[#fcfcfc] w-full mx-auto min-h-[240px] justify-between gap-8">
       <div className="flex items-end justify-between">
-        <div className="color-[#2f3037] font-bold text-5xl w-[30%]">
+        <div className="color-[#2f3037] font-bold text-5xl">
           {`${decodeURIComponent(
             examDetails.main_file.replace(/^.*[\\\/]/, "").replace(/\..+$/, "")
           )} `}
         </div>
-        <div className="flex color-[#2f3037] font-bold text-2xl gap-2">
-          {`${examDetails.class} - ${examDetails.teacher} - ${examDetails.type} - ${examDetails.year} 學年度`}
-          <div>
-            <Chip
-              color={`${examDetails.has_ans === 1 ? "success" : "warning"}`}
-              size="lg"
-              variant="flat"
-            >
-              {examDetails.has_ans === 1 ? "有" : "無"}答案
-            </Chip>
-          </div>
-        </div>
+      </div>
+      <div className="flex flex-row-reverse color-[#2f3037] font-bold text-2xl gap-2">
+        <Chip
+          color={`${examDetails.has_ans === 1 ? "success" : "warning"}`}
+          size="lg"
+          variant="flat"
+        >
+          {examDetails.has_ans === 1 ? "有" : "無"}答案
+        </Chip>
+        {`${examDetails.class} - ${examDetails.teacher} - ${examDetails.type} - ${examDetails.year} 學年度`}
       </div>
       <div className="flex items-end justify-between">
         <div className="flex items-end justify-between gap-6">
@@ -85,7 +134,7 @@ export default function ExamDetailSection({
           >
             下載檔案
           </Button>
-          {examDetails.has_ans == 1 && (
+          {examDetails.has_ans == 1 && examDetails.ans_file && (
             <Button
               color="danger"
               variant="bordered"
@@ -172,40 +221,91 @@ export default function ExamDetailSection({
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  Log in
+                  Create Exercise
                 </ModalHeader>
                 <ModalBody>
                   <Input
                     autoFocus
-                    label="Email"
-                    placeholder="Enter your email"
+                    required
+                    label="Question"
+                    placeholder="Enter your question"
                     variant="bordered"
+                    onChange={(e) => setQuestion(e.target.value)}
                   />
                   <Input
-                    label="Password"
-                    placeholder="Enter your password"
-                    type="password"
+                    label="Content"
+                    placeholder="Enter your content"
                     variant="bordered"
+                    onChange={(e) => setContent(e.target.value)}
                   />
+                  {!selectFiles && (
+                    <>
+                      <Button
+                        color="default"
+                        variant="faded"
+                        onClick={() => {
+                          if (filesInputRef.current) {
+                            filesInputRef.current.click();
+                          }
+                          console.log("click upload file");
+                        }}
+                      >
+                        Upload Files
+                      </Button>
+                      <input
+                        type="file"
+                        multiple
+                        ref={filesInputRef}
+                        style={{ display: "none" }}
+                        onChange={(e) => handleFileChange(e)}
+                      />
+                    </>
+                  )}
+                  {selectFiles && (
+                    <div className="flex flex-col gap-2">
+                      {selectFiles.map((file) => (
+                        // eslint-disable-next-line react/jsx-key
+                        <div className="flex flex-row gap-2">
+                          <div className="flex items-center justify-center w-8 h-8 bg-[#2f3037] rounded-full text-white">
+                            {file.name}
+                          </div>
+                        </div>
+                      ))}
+                      <Button
+                        color="danger"
+                        variant="light"
+                        className="mr-2"
+                        radius="full"
+                        onClick={() => setSelectFiles(null)}
+                      >
+                        X
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="flex py-2 px-1 justify-between">
                     <Checkbox
                       classNames={{
                         label: "text-small",
                       }}
+                      onChange={() => setHideName(!hideName)}
                     >
-                      Remember me
+                      <span>Anonymous</span>
                     </Checkbox>
-                    <Link color="primary" href="#" size="sm">
-                      Forgot password?
-                    </Link>
                   </div>
                 </ModalBody>
                 <ModalFooter>
                   <Button color="danger" variant="flat" onPress={onClose}>
                     Close
                   </Button>
-                  <Button color="primary" onPress={onClose}>
-                    Sign in
+                  <Button
+                    color="primary"
+                    onPress={() => {
+                      handleSubmit();
+                      onClose();
+                    }}
+                  >
+                    Create
                   </Button>
                 </ModalFooter>
               </>

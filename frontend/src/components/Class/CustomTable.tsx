@@ -5,20 +5,10 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Modal,
-  ModalContent,
-  useDisclosure,
-  ModalHeader,
-  ModalBody,
-  Image,
-  ModalFooter,
-  Spinner,
   Chip,
   ChipProps,
 } from "@nextui-org/react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
   1: "success",
@@ -28,41 +18,14 @@ const statusColorMap: Record<string, ChipProps["color"]> = {
 export default function CustomTable({
   data,
   onClickRow,
-}: // hasMore,
-// scrollerRef,
-// loaderRef,
+}: 
 {
   data: any[];
   onClickRow: any;
-  // hasMore: any;
-  // scrollerRef: any;
-  // loaderRef: any;
 }) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [image, setImage] = useState("");
-  const pathname = usePathname();
 
   return (
     <>
-      {/* <Modal
-        isOpen={isOpen}
-        onClose={onClose}
-        size="lg"
-        backdrop="blur"
-        className="bg-primary"
-      >
-        <ModalContent>
-          <ModalHeader className="mx-auto">{dict.preview.header}</ModalHeader>
-          <ModalBody className="min-h-unit-20">
-            <Image
-              alt="x ray image"
-              src={`http://127.0.0.1:3000/${image}`}
-            />
-          </ModalBody>
-          <ModalFooter className="flex flex-wrap justify-center gap-3">
-          </ModalFooter>
-        </ModalContent>
-      </Modal> */}
       <Table
         aria-label="Table with exams data"
         isHeaderSticky
@@ -73,14 +36,6 @@ export default function CustomTable({
           td: "text-base  pt-3 pb-3",
           tr: "hover:bg-[#1f212d] hover:text-white transition-all",
         }}
-        // baseRef={scrollerRef}
-        // bottomContent={
-        //   hasMore ? (
-        //     <div className="flex w-full justify-center">
-        //       <Spinner ref={loaderRef} color="white" />
-        //     </div>
-        //   ) : null
-        // }
       >
         <TableHeader>
           <TableColumn className="w-[20%]">科目</TableColumn>
@@ -135,7 +90,7 @@ export default function CustomTable({
                 </TableCell>
                 <TableCell>
                   <Link
-                    href={`${pathname}/exam/${d.id}`}
+                    href={`/class/${d.class_id}/exam/${d.id}`}
                     className="h-full hover:underline"
                   >
                     {`>>`}

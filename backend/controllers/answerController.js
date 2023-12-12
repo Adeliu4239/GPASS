@@ -44,10 +44,12 @@ const answerController = {
     try {
       connection = await poolConnection();
       const exerciseId = req.params.exerciseId;
+      const answerInfo = JSON.parse(req.body.answerInfo);
       const userId = req.user.id;
-      const content = req.body.content;
+      const content = answerInfo.content;
+      const hideName = answerInfo.hideName;
       const image = req.file;
-      console.log("image", image);
+      console.log("answerInfo", req.body);
       if (!exerciseId) {
         const [errorCode, errorMessage] = errorRes.exerciseIdMissing();
         return res.status(errorCode).json({ error: errorMessage });
@@ -66,7 +68,7 @@ const answerController = {
         userId,
         content,
         imageUrl,
-        hideName: req.body.hideName? req.body.hideName : 0,
+        hideName: hideName? 1 : 0,
       };
       const result = await answerModel.createAnswer(answer, connection);
       if (!result) {

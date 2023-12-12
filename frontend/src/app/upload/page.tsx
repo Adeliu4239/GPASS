@@ -28,7 +28,6 @@ export default function UploadPage() {
   ) => {
     const file = event.target.files?.[0];
     if (file) {
-      console.log("filebjkbvsbvsibvosvos", type, file);
       if (type === "mainFile") {
         console.log("file", file);
         setSelectFile(file);

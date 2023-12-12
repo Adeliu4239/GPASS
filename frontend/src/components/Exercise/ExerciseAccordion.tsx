@@ -85,14 +85,13 @@ export default function ExerciseAccordion({ exercises }: { exercises: any }) {
               src={
                 exercise.creator_photo ? exercise.creator_photo : "/user.svg"
               }
-              ImgComponent={exercise.creator_photo ? "img" : "svg"}
               imgProps={{ referrerPolicy: "no-referrer" }}
             />
           }
           title={<MarkdownRender content={`${exercise.question}`} style={markdownTitleStyle} />}
           subtitle={<Subtitle exercise={exercise} />}
         >
-          <div className="flex items-center gap-2 ml-[64px] mr-2 justify-between">
+          <div className="flex items-center gap-3 ml-[64px] mr-2 justify-between">
             <div className="flex-grow">
               <MarkdownRender
                 content={exercise.content ? exercise.content : defaultContent}

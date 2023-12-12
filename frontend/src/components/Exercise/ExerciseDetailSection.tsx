@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import transformDate from "@/utils/transformDate";
+import Swal from "sweetalert2";
 import {
   Modal,
   ModalContent,
@@ -9,14 +10,18 @@ import {
   ModalBody,
   ModalFooter,
   Avatar,
+  Accordion,
+  AccordionItem,
   Button,
   Chip,
   useDisclosure,
   Checkbox,
   Input,
   Link,
+  Image,
 } from "@nextui-org/react";
 import MarkdownRender from "@components/MarkdownRender";
+import useCreateAnswer from "@/hooks/useCreateAnswer";
 
 export default function ExerciseDetailsSection({
   examDetails,
@@ -25,7 +30,51 @@ export default function ExerciseDetailsSection({
   examDetails: any;
   exerciseDetails: any;
 }) {
+  const [content, setContent] = useState<string>("");
+  const [hideName, setHideName] = useState<boolean>(false);
+  const [selectFile, setSelectFile] = useState<File | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const { uploadData } = useCreateAnswer();
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setSelectFile(file);
+    }
+  };
+
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+
+  const handleSubmit = async () => {
+    if (content) {
+      let uploadProps = {
+        content,
+        image_url: selectFile,
+        hideName: hideName,
+      };
+      try {
+        await uploadData(uploadProps, exerciseDetails.id);
+        setContent("");
+        setHideName(false);
+        setSelectFile(null);
+      } catch (e) {
+        console.error(e);
+        Swal.fire({
+          icon: "error",
+          title: "Upload failed",
+          text: "An error occurred while uploading your question.",
+        });
+      }
+    } else {
+      // 顯示警告的 SweetAlert
+      Swal.fire({
+        icon: "warning",
+        title: "Missing question",
+        text: "Please enter a question before submitting.",
+      });
+    }
+  };
 
   const mainTitleStyle = {
     fontSize: "3rem",
@@ -52,6 +101,7 @@ export default function ExerciseDetailsSection({
     examDetails.main_file.replace(/^.*[\\\/]/, "").replace(/\..+$/, "")
   );
 
+  console.log(exerciseDetails.images);
   return (
     <div className="flex flex-col p-8 gap-3 border border-[#2f3037] rounded-xl bg-[#fcfcfc] w-full mx-auto min-h-[240px] justify-between">
       <div className="flex items-end justify-between">
@@ -73,7 +123,6 @@ export default function ExerciseDetailsSection({
                 ? exerciseDetails.creator_photo
                 : "/user.svg"
             }
-            ImgComponent={exerciseDetails.creator_photo ? "img" : "svg"}
             imgProps={{ referrerPolicy: "no-referrer" }}
           />
           <div className="flex flex-col">
@@ -91,10 +140,25 @@ export default function ExerciseDetailsSection({
       </div>
       <div className="ml-[56px]">
         <MarkdownRender
-          content={exerciseDetails.content}
+          content={
+            exerciseDetails.content ? exerciseDetails.content : "沒有題目內容"
+          }
           style={contentStyle}
         />
       </div>
+      {exerciseDetails.images && exerciseDetails.images.length > 0 && (
+        <div className="flex flex-col w-[60%] max-h-[50vh] overflow-y-scroll self-center gap-4">
+          {exerciseDetails.images.map((image: any) => (
+            // eslint-disable-next-line react/jsx-key
+            <Image
+              removeWrapper
+              className={"w-full self-center"}
+              src={image.image_url}
+              alt="Exercise image"
+            />
+          ))}
+        </div>
+      )}
       <div className="flex flex-row-reverse">
         <Button
           color="warning"
@@ -140,40 +204,91 @@ export default function ExerciseDetailsSection({
             {(onClose) => (
               <>
                 <ModalHeader className="flex flex-col gap-1">
-                  Log in
+                  Create Answer
                 </ModalHeader>
                 <ModalBody>
                   <Input
                     autoFocus
-                    label="Email"
-                    placeholder="Enter your email"
-                    variant="bordered"
+                    label="Content"
+                    placeholder="Enter your response"
+                    value={content}
+                    onChange={(e) => setContent(e.target.value)}
                   />
-                  <Input
-                    label="Password"
-                    placeholder="Enter your password"
-                    type="password"
-                    variant="bordered"
-                  />
+                  {!selectFile && (
+                    <>
+                      <Button
+                        color="default"
+                        variant="faded"
+                        onClick={() => {
+                          if (fileInputRef.current) {
+                            fileInputRef.current.click();
+                          }
+                          console.log("click upload file");
+                        }}
+                      >
+                        Upload Files
+                      </Button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={(e) => handleFileChange(e)}
+                      />
+                    </>
+                  )}
+                  {selectFile && (
+                    <div className="flex flex-col gap-2">
+                      <div className="flex flex-row gap-2">
+                        <Chip
+                          color="default"
+                          variant="flat"
+                          onClose={() => setSelectFile(null)}
+                        >
+                          {selectFile.name}
+                        </Chip>
+                        <Link
+                          color="primary"
+                          href={URL.createObjectURL(selectFile)}
+                          target="_blank"
+                        >
+                          Preview
+                        </Link>
+                      </div>
+                      <Button
+                        color="danger"
+                        variant="light"
+                        className="mr-2"
+                        radius="full"
+                        onClick={() => setSelectFile(null)}
+                      >
+                        X
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="flex py-2 px-1 justify-between">
                     <Checkbox
                       classNames={{
                         label: "text-small",
                       }}
+                      onChange={() => setHideName(!hideName)}
                     >
-                      Remember me
+                      <span>Anonymous</span>
                     </Checkbox>
-                    <Link color="primary" href="#" size="sm">
-                      Forgot password?
-                    </Link>
                   </div>
                 </ModalBody>
                 <ModalFooter>
                   <Button color="danger" variant="flat" onPress={onClose}>
                     Close
                   </Button>
-                  <Button color="primary" onPress={onClose}>
-                    Sign in
+                  <Button
+                    color="primary"
+                    onPress={() => {
+                      handleSubmit();
+                      onClose();
+                    }}
+                  >
+                    Create Answer
                   </Button>
                 </ModalFooter>
               </>

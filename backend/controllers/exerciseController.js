@@ -107,9 +107,12 @@ const exerciseController = {
         return res.status(errorCode).json({ error: errorMessage });
       }
 
-      const question = req.body.question;
-      const content = req.body ? req.body.content : null;
+      const exerciseInfo = JSON.parse(req.body.exerciseInfo)
+      const question = exerciseInfo.question;
+      const content = exerciseInfo.content;
       const creator = req.user.id;
+      const hideName = exerciseInfo.hideName? 1 : 0;
+      console.log(examId,question);
       if (!examId || !question) {
         const [errorCode, errorMessage] = errorRes.bodyMissing();
         return res.status(errorCode).json({ error: errorMessage });
@@ -118,6 +121,7 @@ const exerciseController = {
         question,
         content,
         creator,
+        hideName,
       };
       const exerciseId = await exerciseModel.createExercise(
         examId,

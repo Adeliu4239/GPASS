@@ -10,7 +10,7 @@ router.get("/", (req, res) => {
 
 router.get("/:exerciseId", answerController.getAnswerList);
 router.post(
-  "/upload/:exerciseId",
+  "/:exerciseId",
   uploadFiles
     .upLoadFlies(`gpass/answers`)
     .single("image_url"),
