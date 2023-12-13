@@ -67,6 +67,66 @@ const userController = {
       return res.status(errorCode).json({ error: errorMessage });
     }
   },
+  signinWithNYCU: async (req, res) => {
+    console.log("signinWithNYCU");
+    try {
+      const user = {
+        name: req.user.username,
+        email: req.user.email,
+        photo: null,
+        provider: "nycu",
+      };
+      if(!user.email){
+        const [errorCode, errorMessage] = errorRes.emailNotFound();
+        return res.status(errorCode).json({ error: errorMessage });
+      }
+      const userExist = await userModel.getUserByEmail(user.email);
+      if (userExist) {
+        const token = await userUtil.generateAccessToken(userExist);
+        const responseData = {
+          access_token: token,
+          access_expired: 604800,
+          user: {
+            id: userExist.id,
+            provider: userExist.provider,
+            name: userExist.name,
+            email: userExist.email,
+            photo: userExist?.photo || null,
+            role: userExist.role,
+          },
+        };
+        res.cookie("token", token);
+        res.cookie("userId", userExist.id);
+        res.cookie("userName", userExist.name);
+        res.cookie("userPhoto", "null");
+        return res.redirect('/');
+      }
+      const userId = await userModel.createUser(user);
+      user.id = userId;
+      const token = await userUtil.generateAccessToken(user);
+      const responseData = {
+        access_token: token,
+        access_expired: 604800,
+        user: {
+          id: userId,
+          provider: req.body.provider,
+          name: user.name,
+          email: user.email,
+          picture: user?.picture || null,
+          role: user.role,
+        },
+      };
+      res.cookie("token", token);
+      res.cookie("userId", userId);
+      res.cookie("userName", user.name);
+      res.cookie("userPhoto", "null");
+      return res.redirect('/');
+    } catch (error) {
+      console.log(error);
+      const [errorCode, errorMessage] = errorRes.dbConnectFailed();
+      return res.status(errorCode).json({ error: errorMessage });
+    }
+  },
   logout: async (req, res) => {
     console.log("logout");
     try {
