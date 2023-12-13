@@ -4,9 +4,6 @@ FROM node:18.16.1
 # 设置容器内的工作目录
 WORKDIR /app/backend
 
-# 在工作目录下创建 logs 文件夹
-RUN mkdir logs
-
 # 将依赖文件复制到工作目录
 COPY package*.json ./
 
