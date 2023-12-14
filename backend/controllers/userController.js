@@ -5,13 +5,21 @@ const errorRes = require("../utils/errorResponse");
 const userController = {
   signin: async (req, res) => {
     console.log("signin");
+    console.log(req.body);
     try {
+      // const user = {
+      //   id: req.user.id,
+      //   name: req.user.displayName,
+      //   email: req.user.emails[0].value,
+      //   photo: req.user.photos[0].value,
+      //   provider: req.user.provider,
+      // };
       const user = {
-        id: req.user.id,
-        name: req.user.displayName,
-        email: req.user.emails[0].value,
-        photo: req.user.photos[0].value,
-        provider: req.user.provider,
+        id: req.body.id,
+        name: req.body.name,
+        email: req.body.email,
+        photo: req.body.photo,
+        provider: req.body.provider,
       };
       if(!user.email){
         const [errorCode, errorMessage] = errorRes.emailNotFound();
