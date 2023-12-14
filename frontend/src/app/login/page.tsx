@@ -4,6 +4,20 @@ import { Image } from "@nextui-org/react";
 import useLogin from "@/hooks/useLogin";
 import { useRouter } from "next/navigation";
 
+const authenticateNYCU = async () =>
+{
+  const authorizationUrl = 'https://id.nycu.edu.tw/o/authorize/';
+  const responseType = 'code';
+  const scope = 'profile name';
+  const redirectUri = 'http://localhost:3000/auth/nycu/callback';
+  // const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
+  const clientId = process.env.NEXT_PUBLIC_NYCU_CLIENT_ID;
+  console.log(clientId);
+  const authUrl = `${authorizationUrl}?client_id=${clientId}&response_type=${responseType}&scope=${scope}&redirect_uri=${redirectUri}`;
+
+  window.open(authUrl);
+}
+
 export default function Login() {
   const { handleLoginWithGoogle, isLoading, error } = useLogin();
   // const router = useRouter();
@@ -24,8 +38,8 @@ export default function Login() {
           <button
             className="flex justify-center items-center w-[80%] h-12 bg-[#444444] text-white rounded-md hover:bg-[#333333] transition-all duration-200"
             onClick={() => {
-              // window.open("http://localhost:5000/auth/google", "_blank");
-              window.open("http://adeliu-stylish.store/auth/google", "_blank");
+              window.open("http://localhost:5000/auth/google", "_blank");
+              // window.open("http://adeliu-stylish.store/auth/google", "_blank");
               // router.push("/");
             }}
           >
@@ -39,10 +53,9 @@ export default function Login() {
           <button
             className="flex justify-center items-center w-[80%] h-12 bg-[#444444] text-white rounded-md hover:bg-[#333333] transition-all duration-200"
             onClick={() => {
-              // window.open("http://localhost:5000/auth/google", "_blank");
-              window.open("http://adeliu-stylish.store/auth/nycu", "_blank");
-              // router.push("/");
-            }}
+              authenticateNYCU();
+            }
+            }
           >
             <h1 className="text-2xl font-bold">Login with NYCU</h1>
           </button>

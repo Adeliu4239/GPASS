@@ -1,9 +1,9 @@
 version: '3'
 services:
-  frontend:
-    image: adeliu42/gpass-frontend:latest
-    ports:
-      - "3000:3000"
+  # frontend:
+  #   image: adeliu42/gpass-frontend:latest
+  #   ports:
+  #     - "3000:3000"
   backend:
     image: adeliu42/gpass-backend:latest
     ports:
