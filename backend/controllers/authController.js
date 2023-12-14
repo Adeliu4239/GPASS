@@ -10,8 +10,8 @@ passport.use(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: "http://localhost:5000/auth/google/callback",
-      // callbackURL: "https://adeliu-stylish.store/auth/google/callback",
+      // callbackURL: "http://localhost:5000/auth/google/callback",
+      callbackURL: "https://adeliu-stylish.store/auth/google/callback",
     },
     function (accessToken, refreshToken, profile, done) {
       // 此處可以處理驗證成功後的操作
@@ -30,8 +30,8 @@ passport.use('nycu', new OAuth2Strategy({
   tokenURL: 'https://id.nycu.edu.tw/o/token/',
   clientID: process.env.NYCU_CLIENT_ID,
   clientSecret: process.env.NYCU_CLIENT_SECRET,
-  callbackURL: 'http://localhost:5000/auth/nycu/callback', // 你的回调URL
-  // callbackURL: 'https://adeliu-stylish.store/auth/nycu/callback', // 你的回调URL
+  // callbackURL: 'http://localhost:5000/auth/nycu/callback', // 你的回调URL
+  callbackURL: 'https://adeliu-stylish.store/auth/nycu/callback', // 你的回调URL
 },(code, refreshToken, profile, done) => {
   // 在这里处理获取用户信息后的逻辑，你可以将用户信息存储到数据库中，或者执行其他操作
   console.log(code);
@@ -73,8 +73,8 @@ const handleNYCUCallback = async (req, res, next) => {
   console.log(code);
 
   const tokenUrl = 'https://id.nycu.edu.tw/o/token/';
-  const redirectUri = 'http://localhost:5000/auth/nycu/callback';
-  // const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
+  // const redirectUri = 'http://localhost:5000/auth/nycu/callback';
+  const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
   const tokenData = {
     grant_type: 'authorization_code',
     code,

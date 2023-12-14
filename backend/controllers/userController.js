@@ -39,7 +39,7 @@ const userController = {
         res.cookie("userId", userExist.id);
         res.cookie("userName", userExist.name);
         res.cookie("userPhoto", userExist?.photo || null);
-        return res.redirect('/');
+        return res.status(200).json(responseData);
       }
       const userId = await userModel.createUser(user);
       user.id = userId;
@@ -99,7 +99,7 @@ const userController = {
         res.cookie("userId", userExist.id);
         res.cookie("userName", userExist.name);
         res.cookie("userPhoto", "null");
-        return res.redirect('/');
+        return res.status(200).json(responseData);
       }
       const userId = await userModel.createUser(user);
       user.id = userId;
