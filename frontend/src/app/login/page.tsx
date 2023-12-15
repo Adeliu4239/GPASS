@@ -53,7 +53,7 @@ export default function Login() {
           <button
             className="flex justify-center items-center w-[80%] h-12 bg-[#444444] text-white rounded-md hover:bg-[#333333] transition-all duration-200"
             onClick={() => {
-              window.open("http://localhost:5000/auth/nycu", "_blank");
+              authenticateNYCU();
             }
             }
           >

@@ -57,11 +57,7 @@ export async function GET(req) {
     const result = await loginGPASS(user.data.username, user.data.email);
     console.log(result);
 
-    // const response = new NextResponse("", { status: 302 }).redirect(
-    //   new URL("/", req.url)
-    // );
-
-    const response = new NextResponse();
+    let response = NextResponse.redirect(new URL("/", req.nextUrl));
     
     response.cookies.set("token", result.access_token, {
       maxAge: 30 * 24 * 60 * 60,
