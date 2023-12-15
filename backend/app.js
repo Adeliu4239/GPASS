@@ -20,6 +20,7 @@ const loginRoute = require("./routes/loginRoute");
 const app = express();
 const port = process.env.PORT;
 
+app.use(cors());
 const logFileName = `access-log-${logger.getDate()}.log`;
 var accessLogStream = fs.createWriteStream(
   path.join(__dirname, "./logs", logFileName),
@@ -54,7 +55,6 @@ app.use(
 // middleware
 app.use(express.json());
 
-app.use(cors());
 
 // routes
 app.use("/healthcheck", healthyCheckerRoute);

@@ -104,7 +104,7 @@ const userController = {
         res.cookie("userId", userExist.id);
         res.cookie("userName", userExist.name);
         res.cookie("userPhoto", "null");
-        return res.status(200).json(responseData);
+        return res.redirect('http://localhost:3000/');
       }
       const userId = await userModel.createUser(user);
       user.id = userId;
@@ -125,7 +125,7 @@ const userController = {
       res.cookie("userId", userId);
       res.cookie("userName", user.name);
       res.cookie("userPhoto", "null");
-      return res.redirect('/');
+      return res.redirect('http://localhost:3000/');
     } catch (error) {
       console.log(error);
       const [errorCode, errorMessage] = errorRes.dbConnectFailed();

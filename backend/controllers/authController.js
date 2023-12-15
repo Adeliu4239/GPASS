@@ -59,8 +59,8 @@ const authenticateNYCU = async (req, res) =>
   const authorizationUrl = 'https://id.nycu.edu.tw/o/authorize/';
   const responseType = 'code';
   const scope = 'profile name';
-  // const redirectUri = 'http://localhost:5000/auth/nycu/callback';
-  const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
+  const redirectUri = 'http://localhost:5000/auth/nycu/callback';
+  // const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
   const clientId = process.env.NYCU_CLIENT_ID;
   
   const authUrl = `${authorizationUrl}?client_id=${clientId}&response_type=${responseType}&scope=${scope}&redirect_uri=${redirectUri}`;
@@ -73,8 +73,8 @@ const handleNYCUCallback = async (req, res, next) => {
   console.log(code);
 
   const tokenUrl = 'https://id.nycu.edu.tw/o/token/';
-  // const redirectUri = 'http://localhost:5000/auth/nycu/callback';
-  const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
+  const redirectUri = 'http://localhost:5000/auth/nycu/callback';
+  // const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
   const tokenData = {
     grant_type: 'authorization_code',
     code,
