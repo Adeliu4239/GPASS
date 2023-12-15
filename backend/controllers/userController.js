@@ -25,9 +25,6 @@ const userController = {
         const [errorCode, errorMessage] = errorRes.emailNotFound();
         return res.status(errorCode).json({ error: errorMessage });
       }
-      if (req.user.provider === "google") {
-        user.picture = req.user.photos[0].value;
-      }
       const userExist = await userModel.getUserByEmail(user.email);
       if (userExist) {
         const token = await userUtil.generateAccessToken(userExist);
