@@ -28,14 +28,14 @@ export default function useCustomSWR<T>(url: string, options?: any) {
         });
 
         // Check if the status code is not in the range 200-299
-        if (res.status < 200 || res.status >= 300) {
-          const error = new Error(
-            "An error occurred while fetching the data."
-          );
-        //   error.info = res.data; // axios automatically parses JSON
-        //   error.status = res.status;
-          throw error;
-        }
+        // if (res.status < 200 || res.status >= 300) {
+        //   const error = new Error(
+        //     "An error occurred while fetching the data."
+        //   );
+        // //   error.info = res.data; // axios automatically parses JSON
+        // //   error.status = res.status;
+        //   throw error;
+        // }
 
         return res.data; // axios automatically parses JSON
       } catch (error) {
