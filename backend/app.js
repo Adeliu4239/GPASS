@@ -2,6 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const cors = require("cors");
 var morgan = require("morgan");
 const moment = require("moment-timezone");
 
@@ -53,12 +54,7 @@ app.use(
 // middleware
 app.use(express.json());
 
-app.all("*", (req, res, next) => {
-  res.header("Access-Control-Allow-Headers", "*");
-  res.header("Access-Control-Allow-Methods", "*");
-  res.header("Access-Control-Allow-Origin", "*");
-  next();
-});
+app.use(cors());
 
 // routes
 app.use("/healthcheck", healthyCheckerRoute);
