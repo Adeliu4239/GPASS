@@ -3,6 +3,7 @@
 import { Image } from "@nextui-org/react";
 import useLogin from "@/hooks/useLogin";
 import { useRouter } from "next/navigation";
+import { useSession, signIn, signOut } from "next-auth/react";
 
 const authenticateNYCU = async () =>
 {
@@ -38,9 +39,7 @@ export default function Login() {
           <button
             className="flex justify-center items-center w-[80%] h-12 bg-[#444444] text-white rounded-md hover:bg-[#333333] transition-all duration-200"
             onClick={() => {
-              window.open("http://localhost:5000/auth/google", "_blank");
-              // window.open("http://adeliu-stylish.store/auth/google", "_blank");
-              // router.push("/");
+              signIn("google");
             }}
           >
             <h1 className="text-2xl font-bold">Login with Google</h1>
