@@ -32,6 +32,8 @@ export default function useGetExams(clasId: string, classname:any, teacher: any,
       if (year === "All") year = "";
       if (type === "All") type = "";
       if (hasAns === "All") hasAns = "";
+      if (hasAns === "有") hasAns = "1";
+      if (hasAns === "無") hasAns = "0";
       if (!clasId) clasId = "";
       const response = await axiosAuth.get(`/exams/${clasId}?teacher=${teacher}&year=${year}&type=${type}&hasAns=${hasAns}&class=${classname}`);
       console.log("get exams success", response.data);
