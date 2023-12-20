@@ -25,7 +25,7 @@ export async function GET(req) {
 
   const tokenUrl = "https://id.nycu.edu.tw/o/token/";
   // const redirectUri = "http://localhost:3000/auth/nycu/callback";
-  const redirectUri = `https://gpass-adeliu4239.vercel.app/auth/nycu/callback`;
+  const redirectUri = `https://gpass-hazel.vercel.app/auth/nycu/callback`;
   const tokenData = {
     grant_type: "authorization_code",
     code: code,
