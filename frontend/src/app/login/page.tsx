@@ -16,7 +16,7 @@ const authenticateNYCU = async () =>
   console.log(clientId);
   const authUrl = `${authorizationUrl}?client_id=${clientId}&response_type=${responseType}&scope=${scope}&redirect_uri=${redirectUri}`;
 
-  window.open(authUrl);
+  window.location.href = authUrl;
 }
 
 export default function Login() {
