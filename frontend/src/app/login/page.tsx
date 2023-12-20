@@ -10,8 +10,9 @@ const authenticateNYCU = async () =>
   const authorizationUrl = 'https://id.nycu.edu.tw/o/authorize/';
   const responseType = 'code';
   const scope = 'profile name';
-  const redirectUri = 'http://localhost:3000/auth/nycu/callback';
+  // const redirectUri = 'http://localhost:3000/auth/nycu/callback';
   // const redirectUri = 'https://adeliu-stylish.store/auth/nycu/callback';
+  const redirectUri = `https://gpass-hazel.vercel.app/auth/nycu/callback`;
   const clientId = process.env.NEXT_PUBLIC_NYCU_CLIENT_ID;
   console.log(clientId);
   const authUrl = `${authorizationUrl}?client_id=${clientId}&response_type=${responseType}&scope=${scope}&redirect_uri=${redirectUri}`;
