@@ -28,6 +28,7 @@ const handler = NextAuth({
       clientSecret: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_SECRET ?? "",
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET || "", // 在這裡添加 secret
   callbacks: {
     async signIn(params) {
       const { user, account, profile } = params;
