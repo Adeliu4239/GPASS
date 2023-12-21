@@ -17,7 +17,7 @@ export default function ExamPage({ params }: { params: any }) {
   const { data, error, isLoading } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/exercises/${params.examId}`
   );
-
+  console.log("params", params);
   console.log("examDetails", examDetails);
   console.log("data", data);
 
