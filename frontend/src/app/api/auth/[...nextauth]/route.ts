@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 
 async function loginGPASS(username: any, email: any, photo: any) {
   console.log("Logging in with GPASS...");
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/user/signin`;
+  const url = `http://35.74.134.49/api/1.0/user/signin`;
   console.log(url);
   const data = {
     id: "",
