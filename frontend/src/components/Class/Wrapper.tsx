@@ -127,7 +127,7 @@ export default function Wrapper({
   return (
     <div className="flex w-full flex-col gap-5">
       <div className="flex h-12 gap-5">
-        <Input
+        {/* <Input
           aria-label="Class"
           isClearable
           variant="bordered"
@@ -148,7 +148,7 @@ export default function Wrapper({
           classNames={{
             inputWrapper: "h-full border border-[#2f3037] bg-[#f4f4f5] w-52",
           }}
-        />
+        /> */}
 
         <CustomSelect
           state={type}
